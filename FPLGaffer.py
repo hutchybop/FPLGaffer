@@ -19,6 +19,13 @@ POS_MAP = {1: "GKP", 2: "DEF", 3: "MID", 4: "FWD"}
 TEAM_ID = os.getenv("FPL_TEAM_ID")
 AI_MODEL = "qwen/qwen3-32b"
 
+# Validate TEAM_ID is in .env
+if not TEAM_ID:
+    print("❌ No FPL team ID found in .env file")
+    print("💡 Please add: FPL_TEAM_ID=<your_team_id> to your .env file")
+    print("📖 Refer to README.md for setup instructions")
+    sys.exit(1)
+
 # --- AI setup ---
 API_KEY = os.getenv("GROQ_API_KEY")
 client = None
