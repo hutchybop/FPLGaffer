@@ -1,0 +1,9 @@
+test_runs/
+myenv/
+.env
+GW_*_report.txt
+GW_report.txt
+__pycache__/
+*.pyc
+*.pyo
+*.pyd

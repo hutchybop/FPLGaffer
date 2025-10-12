@@ -1,0 +1,9 @@
+# Before this Run: pip install --upgrade pip setuptools wheel
+# Install with: pip install -r requirements.txt
+
+setuptools
+wheel
+requests
+openai
+python-dotenv
+tabulate
