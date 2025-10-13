@@ -171,9 +171,11 @@ def ai_fpl_helper(prompt, mode):
     elif mode == "w":
         SYSTEM_PROMPT = """
         You are an expert Fantasy Premier League (FPL) assistant and squad builder.
+        Never include <think> or hidden reasoning steps.
+        ONLY ever return the suggested total cost and squad players.
 
         You will receive a JSON object with four keys: GKP, DEF, MID, FWD.
-        Each key contains a list of top-rated players for that position, including their team, price, status, and chance_of_playing_next_round.
+        Each key contains a list of top-rated players for that position, including multiple attributes.
 
         Your task:
         - Build the **optimal 15-player FPL squad** using only the provided players.
@@ -190,10 +192,9 @@ def ai_fpl_helper(prompt, mode):
         2. Maximize total expected returns considering recent form, fixture difficulty, and value for money.
         3. Prefer nailed, consistent starters from strong teams with good upcoming fixtures.
         4. Ensure reasonable bench coverage (at least one playing sub per position group).
-
-        Notes:
-        - Do not attempt to assign a formation or starting XI. Just return the best possible **15-player squad** under the rules.
-        - If two players are close in rating, choose the one with better value or more favourable fixtures.
+        
+        Never include <think> or hidden reasoning steps.
+        ONLY ever return the suggested total cost and optimal 15-player FPL squad players (2 GKP, 5 DEF, 5 MID & 3 FWD).
 
         Output format (plain text only, no JSON):
         Start with the total cost (sum of all 15 players).
@@ -801,10 +802,10 @@ if __name__ == "__main__":
 
             # Print tables for each position
             positions = [
-                ("TOP 4 GOALKEEPERS", "GKP"),
-                ("TOP 10 DEFENDERS", "DEF"), 
-                ("TOP 10 MIDFIELDERS", "MID"),
-                ("TOP 6 FORWARDS", "FWD")
+                ("TOP GOALKEEPERS", "GKP"),
+                ("TOP DEFENDERS", "DEF"), 
+                ("TOP MIDFIELDERS", "MID"),
+                ("TOP FORWARDS", "FWD")
             ]
 
             for title, position in positions:

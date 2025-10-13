@@ -2,10 +2,6 @@ test_runs/
 myenv/
 .env
 reports/
-GW_*_report.txt
-GW_*_report_*.txt
-Wildcard_report.txt
-Wildcard_report_*.txt
 __pycache__/
 *.pyc
 *.pyo
