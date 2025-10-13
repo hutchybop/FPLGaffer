@@ -218,21 +218,24 @@ def ai_fpl_helper(prompt, mode):
         FWD Solanke (BOU, £6.5m) - good fixtures
         FWD Archer (SHU, £4.5m) - budget bench option
         """
-    messages = [
-        {"role": "system", "content": SYSTEM_PROMPT},
-        {"role": "user", "content": prompt}
-    ]
-    resp = client.chat.completions.create(
-        model=AI_MODEL,
-        messages=messages,
-        temperature=0.3,
-        max_tokens=600,
-    )
-    raw = resp.choices[0].message.content.strip()
-    # Remove <think> sections if present and wrap text
-    cleaned = re.sub(r"<think>.*?</think>", "", raw, flags=re.DOTALL).strip()
-    wrapped = "\n".join(textwrap.fill(line, width=120) for line in cleaned.splitlines())
-    return wrapped
+    try:
+        messages = [
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": prompt}
+        ]
+        resp = client.chat.completions.create(
+            model=AI_MODEL,
+            messages=messages,
+            temperature=0.3,
+            max_tokens=600,
+        )
+        raw = resp.choices[0].message.content.strip()
+        # Remove <think> sections if present and wrap text
+        cleaned = re.sub(r"<think>.*?</think>", "", raw, flags=re.DOTALL).strip()
+        wrapped = "\n".join(textwrap.fill(line, width=120) for line in cleaned.splitlines())
+        return wrapped
+    except Exception as e:
+        return f"AI Error: {e}"
 
 
 def fetch_bootstrap_data():
@@ -555,19 +558,23 @@ class Tee:
             f.flush()
 
 
-def get_unique_filename(base_name, ext = ".txt"):
+def get_unique_filename(base_name, ext = ".txt", folder="reports"):
     """
     Generate a unique filename like base_name.txt, base_name_2.txt, etc.
     Args:
         base_name: str of naming convention for file
         ext: str of file extension (default = ".txt")
+        folder: name of folder to save reports to
     Return:
         str of file name
     """
-    filename = f"{base_name}{ext}"
+    # Ensure the folder exists
+    os.makedirs(folder, exist_ok=True)
+    # Build the initial file path
+    filename = os.path.join(folder, f"{base_name}{ext}")
     counter = 2
     while os.path.exists(filename):
-        filename = f"{base_name}_{counter}{ext}"
+        filename = os.path.join(folder, f"{base_name}_{counter}{ext}")
         counter += 1
     return filename
 
@@ -831,3 +838,7 @@ if __name__ == "__main__":
     finally:
         # Restore stdout
         sys.stdout = original_stdout
+
+
+
+
