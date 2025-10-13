@@ -18,6 +18,7 @@ FIXTURE_URL = "https://fantasy.premierleague.com/api/fixtures/"
 POS_MAP = {1: "GKP", 2: "DEF", 3: "MID", 4: "FWD"}
 TEAM_ID = os.getenv("FPL_TEAM_ID")
 AI_MODEL = "qwen/qwen3-32b"
+AI_PROMPT = ""
 
 # Validate TEAM_ID is in .env
 if not TEAM_ID:
@@ -35,49 +36,108 @@ if API_KEY:
         api_key=API_KEY,
     )
 
+# Attributes to send to AI
+AI_PLAYER_ATTRIBUTES = {
+    "web_name",
+    "element_type",
+    "now_cost",
+    "team_name",
+    "team_fix_dif",
+    "status",
+    "chance_of_playing_next_round",
+    "minutes",
+    "goals_scored",
+    "assists",
+    "clean_sheets",
+    "total_points",
+    "form",
+    "ep_next",
+    "expected_goal_involvements_per_90",
+    "expected_goals_conceded_per_90",
+    "selected_by_percent",
+    "rating",
+    "normalized_rating",
+}
+
 # Global weights for all numeric keys in your player dict.
 # Positive weights = increase rating when high.
 # Negative weights = reduce rating when high (e.g. goals conceded).
 # team/fixture/availability weights set to 0 to use them as multipliers.
-ATTRIBUTE_WEIGHTS = {
-    "minutes": 2.0,
-    "goals_scored": 4.0,
-    "assists": 3.0,
-    "bonus": 1.5,
-    "bps": 1.0,
-    "total_points": 3.5,
-    "points_per_game": 2.5,
-    "form": 3.0,
-    "ep_next": 2.5,
-    "value_form": 1.5,
-    "value_season": 1.5,
-    "expected_goals": 2.5,
-    "expected_assists": 2.0,
-    "expected_goal_involvements": 2.5,
-    "expected_goals_per_90": 2.0,
-    "expected_assists_per_90": 1.5,
-    "expected_goal_involvements_per_90": 2.0,
-    "ict_index": 1.5,
-    "influence": 1.0,
-    "creativity": 1.0,
-    "threat": 1.5,
-    "clean_sheets": 2.5,
-    "clean_sheets_per_90": 1.5,
-    "saves": 2.0,
-    "saves_per_90": 2.0,
-    "penalties_saved": 1.0,
-    "goals_conceded": -2.0,
-    "goals_conceded_per_90": -2.0,
-    "expected_goals_conceded": -1.5,
-    "expected_goals_conceded_per_90": -1.5,
-    # multipliers (handled separately) -> give weight 0 so they don't double-count in the base score
+WC_WEIGHTS = {
+    "minutes": 2.2,           # Slightly increased - reliability matters
+    "goals_scored": 3.8,      # Slightly reduced
+    "assists": 3.0,           # Same
+    "bonus": 1.5,             # Same
+    "bps": 1.0,               # Same
+    "total_points": 3.0,      # Reduced - historical less important
+    "points_per_game": 2.8,   # Slightly increased - consistency
+    "form": 2.5,              # Reduced - recent form less critical long-term
+    "ep_next": 1.5,           # Reduced - single gameweek less important
+    "value_form": 2.0,        # Increased - value matters
+    "value_season": 2.0,      # Increased
+    "expected_goals": 2.5,    # Same
+    "expected_assists": 2.0,  # Same
+    "expected_goal_involvements": 2.5,  # Same
+    "expected_goals_per_90": 2.3,       # Slightly increased - efficiency
+    "expected_assists_per_90": 1.8,     # Slightly increased
+    "expected_goal_involvements_per_90": 2.2,  # Slightly increased
+    "ict_index": 1.8,         # Slightly increased - underlying metrics
+    "influence": 1.0,         # Same
+    "creativity": 1.0,        # Same
+    "threat": 1.5,            # Same
+    "clean_sheets": 2.3,      # Slightly reduced
+    "clean_sheets_per_90": 1.7,         # Slightly increased
+    "saves": 2.0,             # Same
+    "saves_per_90": 2.0,      # Same
+    "penalties_saved": 1.0,   # Same
+    "goals_conceded": -1.8,   # Slightly reduced impact
+    "goals_conceded_per_90": -1.8,      # Slightly reduced
+    "expected_goals_conceded": -1.3,    # Slightly reduced
+    "expected_goals_conceded_per_90": -1.3,  # Slightly reduced
+    # multipliers (keep at 0)
+    "team_strength": 0.0,
+    "team_fix_dif": 0.0,
+    "chance_of_playing_next_round": 0.0
+}
+TRANSFER_WEIGHTS = {
+    "minutes": 2.8,           # Increased - must play next games
+    "goals_scored": 4.2,      # Increased - immediate returns
+    "assists": 3.2,           # Slightly increased
+    "bonus": 2.0,             # Increased - bonus points valuable
+    "bps": 1.2,               # Slightly increased
+    "total_points": 3.0,      # Reduced - historical less important
+    "points_per_game": 2.3,   # Reduced
+    "form": 3.8,              # Highly increased - current form crucial
+    "ep_next": 3.5,           # Highly increased - next game expectation
+    "value_form": 1.2,        # Reduced - value less important
+    "value_season": 1.0,      # Reduced
+    "expected_goals": 2.8,    # Slightly increased
+    "expected_assists": 2.3,  # Slightly increased
+    "expected_goal_involvements": 2.8,  # Slightly increased
+    "expected_goals_per_90": 1.7,       # Reduced - per90 less relevant
+    "expected_assists_per_90": 1.3,     # Reduced
+    "expected_goal_involvements_per_90": 1.7,  # Reduced
+    "ict_index": 1.2,         # Reduced - underlying stats less predictive
+    "influence": 0.8,         # Reduced
+    "creativity": 0.8,        # Reduced
+    "threat": 1.2,            # Reduced
+    "clean_sheets": 3.0,      # Increased - fixture-dependent
+    "clean_sheets_per_90": 1.3,         # Reduced
+    "saves": 2.3,             # Slightly increased - GK returns
+    "saves_per_90": 2.3,      # Slightly increased
+    "penalties_saved": 1.0,   # Same
+    "goals_conceded": -2.5,   # Increased - avoid bad fixtures
+    "goals_conceded_per_90": -2.5,      # Increased
+    "expected_goals_conceded": -2.0,    # Increased - fixture difficulty
+    "expected_goals_conceded_per_90": -2.0,  # Increased
+    # multipliers (keep at 0)
     "team_strength": 0.0,
     "team_fix_dif": 0.0,
     "chance_of_playing_next_round": 0.0
 }
 
 
-def ai_fpl_helper(prompt):
+def ai_fpl_helper(prompt, mode):
     """
     Get AI recommendations for FPL transfers.
     Args:
@@ -85,28 +145,79 @@ def ai_fpl_helper(prompt):
     Returns:
         wrapped: str of ai response
     """
-    SYSTEM_PROMPT = """
-        You are an expert Fantasy Premier League (FPL) assistant.
-        You will receive a JSON object.
-        Never include <think> or hidden reasoning steps.
-        ONLY ever return the suggested transfer and the reason
+    if mode == "t":
+        SYSTEM_PROMPT = """
+            You are an expert Fantasy Premier League (FPL) assistant.
+            You will receive a JSON object.
+            Never include <think> or hidden reasoning steps.
+            ONLY ever return the suggested transfer and the reason
 
-        Each key is a player currently in the user's team (a potential transfer OUT).
-        Each value is a list of candidate players who could replace that player.
+            Each key is a player currently in the user's team (a potential transfer OUT).
+            Each value is a list of candidate players who could replace that player.
+
+            Your task:
+            - Review **all** possible transfers across the whole dataset.
+            - Choose **only one** transfer (OUT → IN) that gives the greatest overall benefit.
+            - Consider player form, expected returns (xGI), fixture difficulty, and availability.
+            - Ignore players who are injured or unlikely to play ('status' != 'a' or chance_of_playing_next_round < 75).
+            - Prefer realistic upgrades that fit typical FPL budgets (avoid big cost jumps).
+            - Explain your reasoning briefly in natural text.
+
+            Output format (plain text only, no JSON):
+            OUT → IN (Team, £price) — short reasoning.
+            Example:
+            Baleba → Palmer (Chelsea, £6.7m) — higher xGI and strong upcoming fixtures.
+        """
+    elif mode == "w":
+        SYSTEM_PROMPT = """
+        You are an expert Fantasy Premier League (FPL) assistant and squad builder.
+
+        You will receive a JSON object with four keys: GKP, DEF, MID, FWD.
+        Each key contains a list of top-rated players for that position, including their team, price, status, and chance_of_playing_next_round.
 
         Your task:
-        - Review **all** possible transfers across the whole dataset.
-        - Choose **only one** transfer (OUT → IN) that gives the greatest overall benefit.
-        - Consider player form, expected returns (xGI), fixture difficulty, and availability.
-        - Ignore players who are injured or unlikely to play ('status' != 'a' or chance_of_playing_next_round < 75).
-        - Prefer realistic upgrades that fit typical FPL budgets (avoid big cost jumps).
-        - Explain your reasoning briefly in natural text.
+        - Build the **optimal 15-player FPL squad** using only the provided players.
+        - The squad **must strictly follow** FPL rules:
+        • 2 Goalkeepers (GKP)
+        • 5 Defenders (DEF)
+        • 5 Midfielders (MID)
+        • 3 Forwards (FWD)
+        • **Total cost ≤ £100.0 million**
+        - **Do not** exceed these position or budget limits under any circumstances.
+
+        Selection priorities:
+        1. Only include players who are available ('status' == 'a' and chance_of_playing_next_round ≥ 75).
+        2. Maximize total expected returns considering recent form, fixture difficulty, and value for money.
+        3. Prefer nailed, consistent starters from strong teams with good upcoming fixtures.
+        4. Ensure reasonable bench coverage (at least one playing sub per position group).
+
+        Notes:
+        - Do not attempt to assign a formation or starting XI. Just return the best possible **15-player squad** under the rules.
+        - If two players are close in rating, choose the one with better value or more favourable fixtures.
 
         Output format (plain text only, no JSON):
-        OUT → IN (Team, £price) — short reasoning.
-        Example:
-        Baleba → Palmer (Chelsea, £6.7m) — higher xGI and strong upcoming fixtures.
-    """
+        Start with the total cost (sum of all 15 players).
+
+        Example output:
+        Total cost: £99.7m
+
+        Squad:
+        GKP Alisson (LIV, £5.8m) - top clean sheet potential
+        GKP Turner (NFO, £4.0m) - budget backup
+        DEF Trippier (NEW, £6.5m) - assists and clean sheets
+        DEF Saliba (ARS, £5.5m) - strong defensive team
+        DEF Gvardiol (MCI, £5.0m) - rotation risk but good value
+        DEF Gabriel (ARS, £5.0m) - solid pick
+        DEF Gusto (CHE, £4.1m) - cheap enabler
+        MID Salah (LIV, £12.5m) - premium captain option
+        MID Foden (MCI, £8.0m) - strong form
+        MID Palmer (CHE, £6.0m) - on penalties
+        MID Bowen (WHU, £7.5m) - great fixtures
+        MID Gordon (NEW, £6.0m) - consistent minutes
+        FWD Haaland (MCI, £14.0m) - must-have forward
+        FWD Solanke (BOU, £6.5m) - good fixtures
+        FWD Archer (SHU, £4.5m) - budget bench option
+        """
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": prompt}
@@ -518,6 +629,9 @@ def print_replacement_impact(player, candidates):
 
 # Main script
 if __name__ == "__main__":
+
+    # --- Initialise script ---
+
     # Fetch and process data
     bootstrap_data = fetch_bootstrap_data()
     players = format_all_players(bootstrap_data)
@@ -525,8 +639,20 @@ if __name__ == "__main__":
     gw = get_current_gameweek(bootstrap_data)
     bank, picks_pids = my_picks(gw)
 
+    # Ask user to choose wildcard mode or transfer mode
+    mode = ""
+    while mode not in ["t", "w"]:
+        mode = input("Choose mode - Transfer (t) or Wildcard (w): ").lower().strip()
+        if mode not in ["t", "w"]:
+            print("Please enter 't' for Transfer mode or 'w' for Wildcard mode")
+
+    # Setting player Attribute weights from user selected mode
+    if mode == "t":
+        weights, base_name = TRANSFER_WEIGHTS, f"GW_{gw}_report"
+    else:  # mode == "w"
+        weights, base_name = WC_WEIGHTS, "Wildcard_report"
+
     # Create an output txt file name
-    base_name = f"GW_{gw}_report"
     filename = get_unique_filename(base_name)
 
     # Open the file and tee output
@@ -534,10 +660,13 @@ if __name__ == "__main__":
     original_stdout = sys.stdout
     sys.stdout = Tee(sys.stdout, f)
     
+
     try:
+        # --- Setup player ratings ---
+
         # Calculate player ratings and add to player dicts
         for player in players:
-            player["rating"] = compute_generic_rating(player, ranges, ATTRIBUTE_WEIGHTS)
+            player["rating"] = compute_generic_rating(player, ranges, weights)
 
         # Normalize player ratings from 0 to 100 and add to player dicts
         min_rating = min(p["rating"] for p in players)
@@ -553,126 +682,151 @@ if __name__ == "__main__":
         current_team = [p for players_list in sorted_players.values() 
                     for p in players_list if p['id'] in picks_pids]
         sorted_current = sorted(current_team, key=lambda x: x['normalized_rating'])
+        
 
-        # Get user input for how many players to show replacements for
-        num_of_replacements = -1
-        while not 0 <= num_of_replacements <= 6:
-            try:
-                num_of_replacements = int(input("How many players do you want to show replacements for? (0-6) "))
-            except ValueError:
-                print("Please enter a valid number between 0 and 6")
+        # --- Transfer Mode ---
 
-        # Compute min and max rating for each position
-        rating_ranges = {
-            pos: {
-                "min": min(p["normalized_rating"] for p in players_list),
-                "max": max(p["normalized_rating"] for p in players_list)
-            }
-            for pos, players_list in sorted_players.items()
-        }
-
-        # Print positional ratings
-        print("\n")
-        print("=" * 60)
-        print("POSITIONAL MIN AND MAX RATINGS")
-        print("=" * 60)
-        # Print nicely
-        for pos, stats in rating_ranges.items():
-            print(f"{pos}: MAX={stats['max']}, MIN={stats['min']}")
-
-        # Print current team in a readable format
-        print("\n")
-        print("=" * 60)
-        print("FPL TEAM ASSESSMENT")
-        print("=" * 60)
-        print("Players sorted by performance score (lowest to highest)")
-        print(f"BANK: £{bank}m" + "\n")
-        print_players(sorted_current)
-
-        # Print players and replacements
-        if num_of_replacements > 0:
+        if mode == "t":
             print("\n")
             print("=" * 60)
-            print(f"REPLACEMENT SUGGESTIONS FOR {num_of_replacements} PLAYERS")
+            print("TRANSFER MODE")
             print("=" * 60)
-            # Generate replacement suggestions
-            player_replacement_options = {}
-            for player in sorted_current[:num_of_replacements]:
-                # Get a list a 4 replacement players for player
-                candidates = find_replacements(player, bank, sorted_players, sorted_current)
-                player_name = player.get("web_name", "")
-                player_pos = POS_MAP.get(player.get("element_type"), "")
-                player_cost = player.get("now_cost", "") /10
-                player_rating = player.get("normalized_rating", "")
-                print("\n" + "=" * 60)
-                print(f"REPLACEMENT OPTIONS FOR: {player_name} ({player_pos}, £{player_cost}m, Rating: {player_rating})")
-                print("=" * 60)
-                # Print replacement players, if there are any
-                if candidates:
-                    print_players(candidates)
-                    print_replacement_impact(player, candidates)
-                    player_replacement_options[player_name] = candidates
-                else:
-                    print("No suitable replacements found within budget.")
 
-            if API_KEY:
-                # Attributes to send to AI
-                keep_keys = {
-                    "web_name",
-                    "element_type",
-                    "now_cost",
-                    "team_name",
-                    "team_fix_dif",
-                    "status",
-                    "chance_of_playing_next_round",
-                    "minutes",
-                    "goals_scored",
-                    "assists",
-                    "clean_sheets",
-                    "total_points",
-                    "form",
-                    "ep_next",
-                    "expected_goal_involvements_per_90",
-                    "expected_goals_conceded_per_90",
-                    "selected_by_percent",
-                    "rating",
-                    "normalized_rating",
+            # Get user input for how many players to show replacements for
+            num_of_replacements = -1
+            while not 0 <= num_of_replacements <= 6:
+                try:
+                    num_of_replacements = int(input("How many players do you want to show replacements for? (0-6) "))
+                except ValueError:
+                    print("Please enter a valid number between 0 and 6")
+
+            # Compute min and max rating for each position
+            rating_ranges = {
+                pos: {
+                    "min": min(p["normalized_rating"] for p in players_list),
+                    "max": max(p["normalized_rating"] for p in players_list)
                 }
+                for pos, players_list in sorted_players.items()
+            }
 
+            # Print positional ratings
+            print("\n")
+            print("=" * 60)
+            print("POSITIONAL MIN AND MAX RATINGS")
+            print("=" * 60)
+            # Print nicely
+            for pos, stats in rating_ranges.items():
+                print(f"{pos}: MAX={stats['max']}, MIN={stats['min']}")
+
+            # Print current team in a readable format
+            print("\n")
+            print("=" * 60)
+            print("FPL TEAM ASSESSMENT")
+            print("=" * 60)
+            print("Players sorted by performance score (lowest to highest)")
+            print(f"BANK: £{bank}m" + "\n")
+            print_players(sorted_current)
+
+            # Print players and replacements
+            if num_of_replacements > 0:
+                print("\n")
+                print("=" * 60)
+                print(f"REPLACEMENT SUGGESTIONS FOR {num_of_replacements} PLAYERS")
+                print("=" * 60)
+                # Generate replacement suggestions
+                player_replacement_options = {}
+                for player in sorted_current[:num_of_replacements]:
+                    # Get a list a 4 replacement players for player
+                    candidates = find_replacements(player, bank, sorted_players, sorted_current)
+                    player_name = player.get("web_name", "")
+                    player_pos = POS_MAP.get(player.get("element_type"), "")
+                    player_cost = player.get("now_cost", "") /10
+                    player_rating = player.get("normalized_rating", "")
+                    print("\n" + "=" * 60)
+                    print(f"REPLACEMENT OPTIONS FOR: {player_name} ({player_pos}, £{player_cost}m, Rating: {player_rating})")
+                    print("=" * 60)
+                    # Print replacement players, if there are any
+                    if candidates:
+                        print_players(candidates)
+                        print_replacement_impact(player, candidates)
+                        player_replacement_options[player_name] = candidates
+                    else:
+                        print("No suitable replacements found within budget.")
+
+                # Prepare the AI prompt for transfer mode
                 # Trim keys to the keep_keys items and convert element_type to GKP, DEF ect
-                trimmed = {
+                transfers_trimmed = {
                     player_name: [
                         {
                             k: (POS_MAP.get(v, v) if k == "element_type" else v)
                             for k, v in player.items()
-                            if k in keep_keys
+                            if k in AI_PLAYER_ATTRIBUTES
                         }
                         for player in replacements
                     ]
                     for player_name, replacements in player_replacement_options.items()
                 }
-                prompt= json.dumps(trimmed, ensure_ascii=False)
+                AI_PROMPT = json.dumps(transfers_trimmed, ensure_ascii=False)
 
-                # Get and Print AI recommendations:
-                resp = ai_fpl_helper(prompt)
-                print("\n" + "=" * 60)
-                print("AI Response")
-                print("=" * 60)
-                print(resp)   
-                print("\n") 
-            
             else:
-                print("\n" + "=" * 60)
-                print("AI Response")
+                print("\n")
                 print("=" * 60)
-                print("AI features disabled - No GROQ_API_KEY found in .env")   
-                print("\n") 
+                print("NO REPLACEMENTS SELECTED")
+                print("=" * 60)
+        
 
-        else:
+        #  --- Wildcard Mode ---
+
+        elif mode == "w":
+            # Shows best players from each position
             print("\n")
             print("=" * 60)
-            print("NO REPLACEMENTS SELECTED")
+            print("WILDCARD MODE")
             print("=" * 60)
+
+            # Create a dict with the required amount of players per position
+            wildcard_trimmed = {
+                "GKP": sorted_players["GKP"][:8],
+                "DEF": sorted_players["DEF"][:10],
+                "MID": sorted_players["MID"][:10], 
+                "FWD": sorted_players["FWD"][:8]
+            }
+
+            # Print tables for each position
+            positions = [
+                ("TOP 4 GOALKEEPERS", "GKP"),
+                ("TOP 10 DEFENDERS", "DEF"), 
+                ("TOP 10 MIDFIELDERS", "MID"),
+                ("TOP 6 FORWARDS", "FWD")
+            ]
+
+            for title, position in positions:
+                print("\n")
+                print("=" * 60)
+                print(title)
+                print("=" * 60)
+                print_players(wildcard_trimmed[position])
+
+            # Prepare AI prompt for the wildcard selection
+            AI_PROMPT = json.dumps(wildcard_trimmed, ensure_ascii=False)
+
+        
+        # --- Get and Print AI recommendations ---
+
+        if API_KEY:             
+            resp = ai_fpl_helper(AI_PROMPT, mode)
+            print("\n" + "=" * 60)
+            print("AI Response")
+            print("=" * 60)
+            print(resp)   
+            print("\n") 
+        else:
+            print("\n" + "=" * 60)
+            print("AI Response")
+            print("=" * 60)
+            print("AI features disabled - No GROQ_API_KEY found in .env")   
+            print("\n") 
+
 
     finally:
         # Restore stdout
