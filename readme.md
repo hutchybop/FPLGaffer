@@ -64,6 +64,7 @@ GROQ_API_KEY=YOUR_GROQ_API_KEY
 #### Get a Groq API key
 Sign up and generate an API key at:  
 👉 [https://console.groq.com/keys](https://console.groq.com/keys)
+
 **N.B. to receive AI input for Wildcard Mode, a subscription may be required.**
 
 ---
