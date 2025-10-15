@@ -1,10 +1,10 @@
 # 🧠 FPLGaffer
 
-**FPLGaffer** is a Python-based Fantasy Premier League (FPL) assistant that helps you rate all players, review your current team, and discover the best transfer replacements — all with optional AI-powered suggestions using **Groq** and the **Qwen3-32B** model.
+**FPLGaffer** is a Python-based Fantasy Premier League (FPL) assistant that helps with weekly transfers or Wildcard selections. Helps you rate all FPL players, review your current team, and discover the best transfer or Wildcard replacements — all with optional AI-powered suggestions using **Groq** and the **Qwen3-32B** model.
 
 ---
 
-## ⚽ Features
+## ⚽ Transfer Mode
 
 ✅ **Rate All FPL Players**  
 - Computes a normalized performance rating (0–100) for every player in the FPL database.  
@@ -20,6 +20,22 @@
 
 ✅ **Game Week report text file creatation**  
 - As well as printing to the terminal, a game week report is created in the current directory. (See included Example_GW_report.txt) 
+
+---
+
+## ⚽ Wildcard Mode
+
+✅ **Rate All FPL Players**  
+- Computes a normalized performance rating (0–100) for every player in the FPL database.  
+
+✅ **Display Top players**  
+- Fetches the top FPL players in each position and prints it in an easy-to-read table view. 
+
+✅ **AI Wildcard Recommendations (Optional)**  
+- Uses **Groq’s Qwen3-32B** model to provide intelligent Wildcard advice, within FPL total player and price limits.
+
+✅ **Wildcard report text file creatation**  
+- As well as printing to the terminal, a Wildcard report is created in the current directory. (See included Example_Wildcard_report.txt) 
 
 ---
 
