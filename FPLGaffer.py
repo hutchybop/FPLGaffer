@@ -17,24 +17,42 @@ BOOTSTRAP_URL = "https://fantasy.premierleague.com/api/bootstrap-static/"
 FIXTURE_URL = "https://fantasy.premierleague.com/api/fixtures/"
 POS_MAP = {1: "GKP", 2: "DEF", 3: "MID", 4: "FWD"}
 TEAM_ID = os.getenv("FPL_TEAM_ID")
-AI_MODEL = "qwen/qwen3-32b"
-AI_PROMPT = ""
+
 
 # Validate TEAM_ID is in .env
 if not TEAM_ID:
-    print("❌ No FPL team ID found in .env file")
-    print("💡 Please add: FPL_TEAM_ID=<your_team_id> to your .env file")
-    print("📖 Refer to README.md for setup instructions")
+    print("No FPL team ID found in .env file")
+    print("Please add: FPL_TEAM_ID=<your_team_id> to your .env file")
+    print("Refer to README.md for setup instructions")
     sys.exit(1)
 
 # --- AI setup ---
-API_KEY = os.getenv("GROQ_API_KEY")
-client = None
-if API_KEY:
-    client = OpenAI(
-        base_url="https://api.groq.com/openai/v1",
-        api_key=API_KEY,
-    )
+FREE_API_KEY = os.getenv("GROQ_API_KEY_FREE")
+PAID_API_KEY = os.getenv("GROQ_API_KEY_PAID")
+BASE_URL = "https://api.groq.com/openai/v1"
+AI_MODEL = "qwen/qwen3-32b"
+AI_PROMPT = ""
+# Create clients
+API_KEY = True
+print("\n")
+print("=" * 60)
+print("AI API KEY STATUS")
+print("=" * 60)
+if FREE_API_KEY and PAID_API_KEY:
+    client_free = OpenAI(base_url=BASE_URL, api_key=FREE_API_KEY)
+    client_paid = OpenAI(base_url=BASE_URL, api_key=PAID_API_KEY)
+    print("Both FREE and PAID AI API keys avaliable")
+    print("Will revert to PAID if free limits are met")
+elif not FREE_API_KEY and PAID_API_KEY:
+    client_paid = OpenAI(base_url=BASE_URL, api_key=PAID_API_KEY)
+    print("Only PAID API KEY available, you will be charged per request")
+elif not PAID_API_KEY and FREE_API_KEY:
+    client_free = OpenAI(base_url=BASE_URL, api_key=FREE_API_KEY)
+    print("Only FREE AI API key available")
+else:
+    API_KEY = False
+    print("No AI API keys available, AI function disabled")
+print("=" * 60)
 
 # Attributes to send to AI
 AI_PLAYER_ATTRIBUTES = {
@@ -64,72 +82,72 @@ AI_PLAYER_ATTRIBUTES = {
 # Negative weights = reduce rating when high (e.g. goals conceded).
 # team/fixture/availability weights set to 0 to use them as multipliers.
 WC_WEIGHTS = {
-    "minutes": 2.2,           # Slightly increased - reliability matters
-    "goals_scored": 3.8,      # Slightly reduced
-    "assists": 3.0,           # Same
-    "bonus": 1.5,             # Same
-    "bps": 1.0,               # Same
-    "total_points": 3.0,      # Reduced - historical less important
-    "points_per_game": 2.8,   # Slightly increased - consistency
-    "form": 2.5,              # Reduced - recent form less critical long-term
-    "ep_next": 1.5,           # Reduced - single gameweek less important
-    "value_form": 2.0,        # Increased - value matters
-    "value_season": 2.0,      # Increased
-    "expected_goals": 2.5,    # Same
-    "expected_assists": 2.0,  # Same
-    "expected_goal_involvements": 2.5,  # Same
-    "expected_goals_per_90": 2.3,       # Slightly increased - efficiency
-    "expected_assists_per_90": 1.8,     # Slightly increased
+    "minutes": 2.2,                            # Slightly increased - reliability matters
+    "goals_scored": 3.8,                       # Slightly reduced
+    "assists": 3.0,           
+    "bonus": 1.5,             
+    "bps": 1.0,               
+    "total_points": 3.0,                       # Reduced - historical less important
+    "points_per_game": 2.8,                    # Slightly increased - consistency
+    "form": 2.5,                               # Reduced - recent form less critical long-term
+    "ep_next": 1.5,                            # Reduced - single gameweek less important
+    "value_form": 2.0,                         # Increased - value matters
+    "value_season": 2.0,                       # Increased
+    "expected_goals": 2.5,    
+    "expected_assists": 2.0,  
+    "expected_goal_involvements": 2.5,  
+    "expected_goals_per_90": 2.3,              # Slightly increased - efficiency
+    "expected_assists_per_90": 1.8,            # Slightly increased
     "expected_goal_involvements_per_90": 2.2,  # Slightly increased
-    "ict_index": 1.8,         # Slightly increased - underlying metrics
-    "influence": 1.0,         # Same
-    "creativity": 1.0,        # Same
-    "threat": 1.5,            # Same
-    "clean_sheets": 2.3,      # Slightly reduced
-    "clean_sheets_per_90": 1.7,         # Slightly increased
-    "saves": 2.0,             # Same
-    "saves_per_90": 2.0,      # Same
-    "penalties_saved": 1.0,   # Same
-    "goals_conceded": -1.8,   # Slightly reduced impact
-    "goals_conceded_per_90": -1.8,      # Slightly reduced
-    "expected_goals_conceded": -1.3,    # Slightly reduced
-    "expected_goals_conceded_per_90": -1.3,  # Slightly reduced
+    "ict_index": 1.8,                          # Slightly increased - underlying metrics
+    "influence": 1.0,         
+    "creativity": 1.0,        
+    "threat": 1.5,            
+    "clean_sheets": 2.3,                       # Slightly reduced
+    "clean_sheets_per_90": 1.7,                # Slightly increased
+    "saves": 2.0,             
+    "saves_per_90": 2.0,      
+    "penalties_saved": 1.0,   
+    "goals_conceded": -1.8,                    # Slightly reduced impact
+    "goals_conceded_per_90": -1.8,             # Slightly reduced
+    "expected_goals_conceded": -1.3,           # Slightly reduced
+    "expected_goals_conceded_per_90": -1.3,    # Slightly reduced
     # multipliers (keep at 0)
     "team_strength": 0.0,
     "team_fix_dif": 0.0,
     "chance_of_playing_next_round": 0.0
 }
 TRANSFER_WEIGHTS = {
-    "minutes": 2.8,           # Increased - must play next games
-    "goals_scored": 4.2,      # Increased - immediate returns
-    "assists": 3.2,           # Slightly increased
-    "bonus": 2.0,             # Increased - bonus points valuable
-    "bps": 1.2,               # Slightly increased
-    "total_points": 3.0,      # Reduced - historical less important
-    "points_per_game": 2.3,   # Reduced
-    "form": 3.8,              # Highly increased - current form crucial
-    "ep_next": 3.5,           # Highly increased - next game expectation
-    "value_form": 1.2,        # Reduced - value less important
-    "value_season": 1.0,      # Reduced
-    "expected_goals": 2.8,    # Slightly increased
-    "expected_assists": 2.3,  # Slightly increased
-    "expected_goal_involvements": 2.8,  # Slightly increased
-    "expected_goals_per_90": 1.7,       # Reduced - per90 less relevant
-    "expected_assists_per_90": 1.3,     # Reduced
+    "minutes": 2.8,                            # Increased - must play next games
+    "goals_scored": 4.2,                       # Increased - immediate returns
+    "assists": 3.2,                            # Slightly increased
+    "bonus": 2.0,                              # Increased - bonus points valuable
+    "bps": 1.2,                                # Slightly increased
+    "total_points": 3.0,                       # Reduced - historical less important
+    "points_per_game": 2.3,                    # Reduced
+    "form": 3.8,                               # Highly increased - current form crucial
+    "ep_next": 3.5,                            # Highly increased - next game expectation
+    "value_form": 1.2,                         # Reduced - value less important
+    "value_season": 1.0,                       # Reduced
+    "expected_goals": 2.8,                     # Slightly increased
+    "expected_assists": 2.3,                   # Slightly increased
+    "expected_goal_involvements": 2.8,         # Slightly increased
+    "expected_goals_per_90": 1.7,              # Reduced - per90 less relevant
+    "expected_assists_per_90": 1.3,            # Reduced
     "expected_goal_involvements_per_90": 1.7,  # Reduced
-    "ict_index": 1.2,         # Reduced - underlying stats less predictive
-    "influence": 0.8,         # Reduced
-    "creativity": 0.8,        # Reduced
-    "threat": 1.2,            # Reduced
-    "clean_sheets": 3.0,      # Increased - fixture-dependent
-    "clean_sheets_per_90": 1.3,         # Reduced
-    "saves": 2.3,             # Slightly increased - GK returns
-    "saves_per_90": 2.3,      # Slightly increased
-    "penalties_saved": 1.0,   # Same
-    "goals_conceded": -2.5,   # Increased - avoid bad fixtures
-    "goals_conceded_per_90": -2.5,      # Increased
-    "expected_goals_conceded": -2.0,    # Increased - fixture difficulty
-    "expected_goals_conceded_per_90": -2.0,  # Increased
+    "ict_index": 1.2,                          # Reduced - underlying stats less predictive
+    "influence": 0.8,                          # Reduced
+    "creativity": 0.8,                         # Reduced
+    "threat": 1.2,                             # Reduced
+    "clean_sheets": 3.0,                       # Increased - fixture-dependent
+    "clean_sheets_per_90": 1.3,                # Reduced
+    "saves": 2.3,                              # Slightly increased - GK returns
+    "saves_per_90": 2.3,                       # Slightly increased
+    "penalties_saved": 1.0,   
+    "goals_conceded": -2.5,                    # Increased - avoid bad fixtures
+    "goals_conceded_per_90": -2.5,             # Increased
+    "expected_goals_conceded": -2.0,           # Increased - fixture difficulty
+    "expected_goals_conceded_per_90": -2.0,    # Increased
     # multipliers (keep at 0)
     "team_strength": 0.0,
     "team_fix_dif": 0.0,
@@ -219,24 +237,57 @@ def ai_fpl_helper(prompt, mode):
         FWD Solanke (BOU, £6.5m) - good fixtures
         FWD Archer (SHU, £4.5m) - budget bench option
         """
+    messages = [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "user", "content": prompt}
+    ]
+    # No keys configured
+    if not API_KEY:
+        return "AI features disabled — No API key found in .env."
     try:
-        messages = [
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": prompt}
-        ]
-        resp = client.chat.completions.create(
-            model=AI_MODEL,
-            messages=messages,
-            temperature=0.3,
-            max_tokens=600,
-        )
-        raw = resp.choices[0].message.content.strip()
-        # Remove <think> sections if present and wrap text
-        cleaned = re.sub(r"<think>.*?</think>", "", raw, flags=re.DOTALL).strip()
-        wrapped = "\n".join(textwrap.fill(line, width=120) for line in cleaned.splitlines())
-        return wrapped
+        # Try with free key first
+        if client_free:
+            resp = client_free.chat.completions.create(
+                model=AI_MODEL,
+                messages=messages,
+                temperature=0.3,
+                max_tokens=600,
+            )
+        elif client_paid:
+            print("💳 Using paid key (no free key configured)")
+            resp = client_paid.chat.completions.create(
+                model=AI_MODEL,
+                messages=messages,
+                temperature=0.3,
+                max_tokens=600,
+            )
+        else:
+            return "AI Error: No available client."
     except Exception as e:
-        return f"AI Error: {e}"
+        err_msg = str(e).lower()
+        retry_errors = [
+            "request too large",
+            "rate_limit_exceeded",
+            "need more tokens",
+            "limit",
+            "tpm",
+            "rpm",
+        ]
+        if any(word in err_msg for word in retry_errors) and client_paid:
+            print("\n")
+            print("Free-tier limit hit — retrying with paid key...")
+            resp = client_paid.chat.completions.create(
+                model=AI_MODEL,
+                messages=messages,
+                temperature=0.3,
+                max_tokens=600,
+            )
+        else:
+            return f"AI Error: {e}"
+    raw = resp.choices[0].message.content.strip()
+    cleaned = re.sub(r"<think>.*?</think>", "", raw, flags=re.DOTALL).strip()
+    wrapped = "\n".join(textwrap.fill(line, width=120) for line in cleaned.splitlines())
+    return wrapped
 
 
 def fetch_bootstrap_data():
@@ -832,7 +883,8 @@ if __name__ == "__main__":
             print("\n" + "=" * 60)
             print("AI Response")
             print("=" * 60)
-            print("AI features disabled - No GROQ_API_KEY found in .env")   
+            print("AI features disabled - No API key found in .env")
+            print("Read readme.md for help") 
             print("\n") 
 
 
