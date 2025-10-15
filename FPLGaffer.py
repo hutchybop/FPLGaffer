@@ -8,6 +8,7 @@ import re
 from openai import OpenAI
 from dotenv import load_dotenv
 from tabulate import tabulate
+from datetime import datetime
 
 # Load .env
 load_dotenv()
@@ -686,6 +687,16 @@ def print_replacement_impact(player, candidates):
         print(f"{i}. {candidate['web_name']} - {cost_str} (Rating: {candidate["normalized_rating"]:.1f})")
 
 
+def format_date_with_ordinal():
+    current_date = datetime.now()
+    day = current_date.day
+    if 4 <= day <= 20 or 24 <= day <= 30:
+        suffix = "th"
+    else:
+        suffix = ["st", "nd", "rd"][day % 10 - 1]
+    return current_date.strftime(f"%a {day}{suffix} %b")
+
+
 # Main script
 if __name__ == "__main__":
 
@@ -748,7 +759,7 @@ if __name__ == "__main__":
         if mode == "t":
             print("\n")
             print("=" * 60)
-            print("TRANSFER MODE")
+            print(f"TRANSFER MODE ({format_date_with_ordinal()})")
             print("=" * 60)
 
             # Get user input for how many players to show replacements for
@@ -840,7 +851,7 @@ if __name__ == "__main__":
             # Shows best players from each position
             print("\n")
             print("=" * 60)
-            print("WILDCARD MODE")
+            print(f"WILDCARD MODE ({format_date_with_ordinal()})")
             print("=" * 60)
 
             # Create a dict with the required amount of players per position
