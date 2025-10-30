@@ -17,6 +17,14 @@ load_dotenv()
 BOOTSTRAP_URL = "https://fantasy.premierleague.com/api/bootstrap-static/"
 FIXTURE_URL = "https://fantasy.premierleague.com/api/fixtures/"
 POS_MAP = {1: "GKP", 2: "DEF", 3: "MID", 4: "FWD"}
+STATUS_MAP = {
+    "a": "available",
+    "d": "doubtful",
+    "i": "injured",
+    "s": "suspended",
+    "u": "unavailable",
+    "n": "not in squad",
+}
 TEAM_ID = os.getenv("FPL_TEAM_ID")
 
 
@@ -31,7 +39,8 @@ if not TEAM_ID:
 FREE_API_KEY = os.getenv("GROQ_API_KEY_FREE")
 PAID_API_KEY = os.getenv("GROQ_API_KEY_PAID")
 BASE_URL = "https://api.groq.com/openai/v1"
-AI_MODEL = "qwen/qwen3-32b"
+# AI_MODEL = "qwen/qwen3-32b"
+AI_MODEL = "llama-3.3-70b-versatile"
 AI_PROMPT = ""
 # Create clients
 API_KEY = True
@@ -54,29 +63,6 @@ else:
     API_KEY = False
     print("No AI API keys available, AI function disabled")
 print("=" * 60)
-
-# Attributes to send to AI
-AI_PLAYER_ATTRIBUTES = {
-    "web_name",
-    "element_type",
-    "now_cost",
-    "team_name",
-    "team_fix_dif",
-    "status",
-    "chance_of_playing_next_round",
-    "minutes",
-    "goals_scored",
-    "assists",
-    "clean_sheets",
-    "total_points",
-    "form",
-    "ep_next",
-    "expected_goal_involvements_per_90",
-    "expected_goals_conceded_per_90",
-    "selected_by_percent",
-    "rating",
-    "normalized_rating",
-}
 
 # Global weights for all numeric keys in your player dict.
 # Positive weights = increase rating when high.
@@ -156,7 +142,7 @@ TRANSFER_WEIGHTS = {
 }
 
 
-def ai_fpl_helper(prompt, mode):
+def ai_fpl_helper(prompt, mode, total_team_cost=100):
     """
     Get AI recommendations for FPL transfers.
     Args:
@@ -164,80 +150,138 @@ def ai_fpl_helper(prompt, mode):
     Returns:
         wrapped: str of ai response
     """
+    print(total_team_cost)
     if mode == "t":
         SYSTEM_PROMPT = """
-            You are an expert Fantasy Premier League (FPL) assistant.
-            You will receive a JSON object.
-            Never include <think> or hidden reasoning steps.
-            ONLY ever return the suggested transfer and the reason
-
-            Each key is a player currently in the user's team (a potential transfer OUT).
-            Each value is a list of candidate players who could replace that player.
-
-            Your task:
-            - Review **all** possible transfers across the whole dataset.
-            - Choose **only one** transfer (OUT → IN) that gives the greatest overall benefit.
-            - Consider player form, expected returns (xGI), fixture difficulty, and availability.
-            - Ignore players who are injured or unlikely to play ('status' != 'a' or chance_of_playing_next_round < 75).
-            - Prefer realistic upgrades that fit typical FPL budgets (avoid big cost jumps).
-            - Explain your reasoning briefly in natural text.
-
-            Output format (plain text only, no JSON):
-            OUT → IN (Team, £price) — short reasoning.
-            Example:
-            Baleba → Palmer (Chelsea, £6.7m) — higher xGI and strong upcoming fixtures.
-        """
-    elif mode == "w":
-        SYSTEM_PROMPT = """
-        You are an expert Fantasy Premier League (FPL) assistant and squad builder.
+        You are an expert Fantasy Premier League (FPL) assistant.
+        You will receive a JSON object.
         Never include <think> or hidden reasoning steps.
-        ONLY ever return the suggested total cost and squad players.
+        ONLY ever return the suggested transfer and the reason.
 
-        You will receive a JSON object with four keys: GKP, DEF, MID, FWD.
-        Each key contains a list of top-rated players for that position, including multiple attributes.
+        Each key in the JSON represents a player currently in the user's team (a potential transfer OUT).
+        Each value contains:
+        - "current": the full player data for that team player.
+        - "candidates": a list of full player data dicts representing possible replacements.
 
         Your task:
-        - Build the **optimal 15-player FPL squad** using only the provided players.
-        - The squad **must strictly follow** FPL rules:
-        • 2 Goalkeepers (GKP)
-        • 5 Defenders (DEF)
-        • 5 Midfielders (MID)
-        • 3 Forwards (FWD)
-        • **Total cost ≤ £100.0 million**
-        - **Do not** exceed these position or budget limits under any circumstances.
-
-        Selection priorities:
-        1. Only include players who are available ('status' == 'a' and chance_of_playing_next_round ≥ 75).
-        2. Maximize total expected returns considering recent form, fixture difficulty, and value for money.
-        3. Prefer nailed, consistent starters from strong teams with good upcoming fixtures.
-        4. Ensure reasonable bench coverage (at least one playing sub per position group).
-        
-        Never include <think> or hidden reasoning steps.
-        ONLY ever return the suggested total cost and optimal 15-player FPL squad players (2 GKP, 5 DEF, 5 MID & 3 FWD).
+        - Review **all** possible transfers (OUT → IN) across the dataset.
+        - Choose **only one** transfer that would provide the greatest overall improvement for the team.
+        - Only recommend a transfer if it clearly improves the team.
+        - Base your decision solely on the provided player data.
+        - Explain your reasoning briefly and clearly in plain language.
 
         Output format (plain text only, no JSON):
-        Start with the total cost (sum of all 15 players).
-
-        Example output:
-        Total cost: £99.7m
-
-        Squad:
-        GKP Alisson (LIV, £5.8m) - top clean sheet potential
-        GKP Turner (NFO, £4.0m) - budget backup
-        DEF Trippier (NEW, £6.5m) - assists and clean sheets
-        DEF Saliba (ARS, £5.5m) - strong defensive team
-        DEF Gvardiol (MCI, £5.0m) - rotation risk but good value
-        DEF Gabriel (ARS, £5.0m) - solid pick
-        DEF Gusto (CHE, £4.1m) - cheap enabler
-        MID Salah (LIV, £12.5m) - premium captain option
-        MID Foden (MCI, £8.0m) - strong form
-        MID Palmer (CHE, £6.0m) - on penalties
-        MID Bowen (WHU, £7.5m) - great fixtures
-        MID Gordon (NEW, £6.0m) - consistent minutes
-        FWD Haaland (MCI, £14.0m) - must-have forward
-        FWD Solanke (BOU, £6.5m) - good fixtures
-        FWD Archer (SHU, £4.5m) - budget bench option
+        OUT → IN (Team, £price) — short reasoning.
+        Example:
+        Baleba → Palmer (Chelsea, £6.7m) — higher xGI and better upcoming fixtures.
+        Example:
+        No transfer required — current team players outperform all candidates.
         """
+    elif mode == "w":
+        SYSTEM_PROMPT = f"""
+            You are an expert Fantasy Premier League (FPL) assistant and squad builder.
+            Never include <think> or hidden reasoning steps.
+            ONLY ever return the suggested total cost and squad players.
+
+            You will receive a JSON object with four keys: GKP, DEF, MID, FWD.
+            Each key contains a list of top-rated players for that position, including multiple attributes.
+
+            Your task:
+                - Build the **optimal 15-player FPL squad** using only the provided players.
+                - The squad **must strictly follow** FPL rules:
+                    • 2 Goalkeepers (GKP)
+                    • 5 Defenders (DEF)
+                    • 5 Midfielders (MID)
+                    • 3 Forwards (FWD)
+                    • Maximum **3 players from any one team**
+                    • **Total cost must not exceed £{total_team_cost}m**
+                    • Do not include any duplicate players — every player in the 15-man squad must be unique and selected only once
+                - Carry out post selection total cost validation
+                    - Add up the exact value of each player and confirm the total is equal to or below {total_team_cost}
+                - Before outputting your selection, validate all constraints:
+                    - Total cost ≤ £{total_team_cost}m (do NOT exceed)
+                    - No more than 3 players from any single team
+                    - Exact position counts (2 GKP, 5 DEF, 5 MID, 3 FWD)
+                - If any constraint is violated, replace players to satisfy the rules **before producing output**.
+
+            Selection priorities:
+                1. Follow budget and position rules exactly (strict limit)
+                2. Maximum 3 players per team
+                3. Maximize expected points/performance using the provided player stats
+                4. Choose realistic budget-friendly players if necessary to stay under £{total_team_cost}m
+
+            Never include <think> or hidden reasoning steps.
+            ONLY ever return the suggested total cost and optimal 15-player FPL squad players (2 GKP, 5 DEF, 5 MID, 3 FWD).
+
+            Output format (plain text only, no JSON):
+                Total cost: £<total team cost> (Must not exceed £{total_team_cost}m)
+
+                Squad:
+                GKP(1/2) Player (Team, £cost) - short reasoning
+                GKP(2/2) Player (Team, £cost) - short reasoning 
+                DEF(1/5) Player (Team, £cost) - short reasoning 
+                DEF(2/5) Player (Team, £cost) - short reasoning 
+                DEF(3/5) Player (Team, £cost) - short reasoning 
+                DEF(4/5) Player (Team, £cost) - short reasoning
+                DEF(5/5) Player (Team, £cost) - short reasoning
+                MID(1/5) Player (Team, £cost) - short reasoning
+                MID(2/5) Player (Team, £cost) - short reasoning
+                MID(3/5) Player (Team, £cost) - short reasoning
+                MID(4/5) Player (Team, £cost) - short reasoning
+                MID(5/5) Player (Team, £cost) - short reasoning
+                FWD(1/3) Player (Team, £cost) - short reasoning
+                FWD(2/3) Player (Team, £cost) - short reasoning
+                FWD(3/3) Player (Team, £cost) - short reasoning
+
+                Team count:
+                List each team and total players selected (must not exceed 3)
+                Example:
+                LIV - 2
+                ARS - 3
+                MCI - 3
+                CHE - 2
+                NEW - 1
+                BOU - 1
+                SHU - 1
+                WHU - 1
+                Team Total Cost:
+                Add the cost of each player together (must not exceed 100)
+                Example:
+                5.8 + 4.0 + 6.5 + 5.5 + 5.0 + 5.0 + 4.1 + 12.5 + 7.0 + 6.0 + 7.5 + 6.0 + 14.0 + 6.5 + 4.5 = 99.6
+
+            Example output:
+                Total cost: £99.6m
+
+                Squad:
+                GKP(1/2) Alisson (LIV, £5.8m) - top clean sheet potential
+                GKP(2/2) Turner (NFO, £4.0m) - budget backup
+                DEF(1/5) Trippier (NEW, £6.5m) - assists and clean sheets
+                DEF(2/5) Saliba (ARS, £5.5m) - strong defensive team
+                DEF(3/5) Gvardiol (MCI, £5.0m) - rotation risk but good value
+                DEF(4/5) Gabriel (ARS, £5.0m) - solid pick
+                DEF(5/5) Gusto (CHE, £4.1m) - cheap enabler
+                MID(1/5) Salah (LIV, £12.5m) - premium captain option
+                MID(2/5) Foden (MCI, £7.0m) - strong form
+                MID(3/5) Palmer (CHE, £6.0m) - on penalties
+                MID(4/5) Bowen (WHU, £7.5m) - great fixtures
+                MID(5/5) Gordon (NEW, £6.0m) - consistent minutes
+                FWD(1/3) Haaland (MCI, £14.0m) - must-have forward
+                FWD(2/3) Solanke (BOU, £6.2m) - good fixtures
+                FWD(3/3) Archer (SHU, £4.5m) - budget bench option
+
+                Team count:
+                LIV - 2
+                NFO - 1
+                NEW - 2
+                ARS - 2
+                MCI - 3
+                CHE - 2
+                WHU - 1
+                BOU - 1
+                SHU - 1
+                Team Cost:
+                5.8 + 4.0 + 6.5 + 5.5 + 5.0 + 5.0 + 4.1 + 12.5 + 7.0 + 6.0 + 7.5 + 6.0 + 14.0 + 6.5 + 4.5 = 99.6
+    """
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": prompt}
@@ -360,7 +404,7 @@ def team_stats(bootstrap_data, fixture_data, num_fix=3):
     for team in bootstrap_data["teams"]:
         team_id = team["id"]
         team_data[team_id] = {
-            "name": team["name"],
+            "name": team["short_name"],
             "strength": team["strength"]
         }
     # Calculate fixture difficulties for each team
@@ -406,7 +450,6 @@ def format_all_players(bootstrap_data):
             "team_strength": team_info["strength"],
             "team_fix_dif": team_info["fix_diff"],
             "status": el.get("status", ""),
-            "news": el.get("news", ""),
             "chance_of_playing_next_round": el.get("chance_of_playing_next_round", ""),
             "news": el.get("news", ""),
             "minutes": el.get("minutes", ""),
@@ -423,9 +466,6 @@ def format_all_players(bootstrap_data):
             "expected_goals": el.get("expected_goals", ""),
             "expected_assists": el.get("expected_assists", ""),
             "expected_goal_involvements": el.get("expected_goal_involvements", ""),
-            "expected_goals_per_90": el.get("expected_goals_per_90", ""),
-            "expected_assists_per_90": el.get("expected_assists_per_90", ""),
-            "expected_goal_involvements_per_90": el.get("expected_goal_involvements_per_90", ""),
             "ict_index": el.get("ict_index", ""),
             "influence": el.get("influence", ""),
             "creativity": el.get("creativity", ""),
@@ -434,11 +474,7 @@ def format_all_players(bootstrap_data):
             "saves": el.get("saves", ""),
             "penalties_saved": el.get("penalties_saved", ""),
             "goals_conceded": el.get("goals_conceded", ""),
-            "saves_per_90": el.get("saves_per_90", ""),
             "expected_goals_conceded": el.get("expected_goals_conceded", ""),
-            "expected_goals_conceded_per_90": el.get("expected_goals_conceded_per_90", ""),
-            "clean_sheets_per_90": el.get("clean_sheets_per_90", ""),
-            "goals_conceded_per_90": el.get("goals_conceded_per_90", ""),
             "selected_by_percent": el.get("selected_by_percent", "")
         }
         players.append(player)
@@ -546,17 +582,38 @@ def compute_generic_rating(player, ranges, attribute_weights):
 
 def sort_players(players):
     """
-    Sort players into positions and by rating.
+    Sort players into positions and by rating, while cleaning and formatting each player dict.
     Args:
         players: list of player dicts (format_all_players)
     Ruturns:
         dict: {GKP: [{player}], DEF: [{player}], MID: [{player}], FWD: [{player}],}
     """
     positions = {"GKP": [], "DEF": [], "MID": [], "FWD": []}
-    for player in players:
-        pos_key = POS_MAP.get(player.get("element_type"))
-        if pos_key in positions:
-            positions[pos_key].append(player)
+    for p in players:
+        pos_key = POS_MAP.get(p.get("element_type"))
+        if pos_key not in positions:
+            continue  # skip unknown element types
+        player = p.copy()  # avoid mutating the original dict
+        # Defining the new key values
+        now_cost = round(player.get("now_cost", 0) / 10, 1)
+        team_fix_dif = round(player.get("team_fix_dif", 0), 2)
+        chance_playing = (
+            100
+            if player.get("chance_of_playing_next_round") in [None, "None", ""]
+            else player.get("chance_of_playing_next_round")
+        )
+        status = STATUS_MAP.get(player.get("status", "a"), "available")
+        # Apply transformations
+        player["pos"] = pos_key
+        player["now_cost(m)"] = now_cost
+        player["team_fix_dif"] = team_fix_dif
+        player["status"] = status
+        player["chance_of_playing_next_round"] = chance_playing
+        # Remove unwanted keys
+        player.pop("now_cost", None)
+        player.pop("value_form", None)
+        player.pop("value_season", None)
+        positions[pos_key].append(player)
     # Sort each position by rating
     return {
         pos: sorted(players_list, key=lambda x: x['normalized_rating'], reverse=True)
@@ -577,19 +634,20 @@ def find_replacements(player, bank, sorted_players, current_team, num_replacemen
             list of replacement player dicts upto num_replacements
     """
     # Calculate max and min price of replacements
-    player_cost = player.get("now_cost", 0)
-    available_budget = (bank * 10) + player_cost
-    min_price = 40
+    player_cost = player.get("now_cost(m)", 0)
+    available_budget = (bank) + player_cost
+    min_price = 4.0
     max_price = available_budget
-    position = POS_MAP.get(player.get("element_type"))
+    # position = POS_MAP.get(player.get("element_type"))
+    position = player.get("pos", "")
     # Filter candidates by budget, availability, and not in current team
     current_team_ids = {p["id"] for p in current_team}
     candidates = [
         p for p in sorted_players[position]
-        if (min_price <= p["now_cost"] <= max_price and
+        if (min_price <= p["now_cost(m)"] <= max_price and
             p["id"] not in current_team_ids and
-            p["status"] == "a" and
-            p["chance_of_playing_next_round"] == 100 or None)
+            p["status"] == "available" and
+            p["chance_of_playing_next_round"] == 100)
     ]
     # Sort replacements best rated first
     sorted_candidates = sorted(candidates, key=lambda x: x['normalized_rating'], reverse=True)
@@ -650,9 +708,10 @@ def print_players(players):
         # Add data for player
         table_data.append([
             player.get("web_name", ""),
+            player.get("team_name", ""),
             player.get("normalized_rating", ""),
-            POS_MAP.get(player.get("element_type", ""), ""),
-            f"£{player.get("now_cost", "") /10}m",
+            player.get("pos", ""),
+            f"£{player.get("now_cost(m)", "")}m",
             player.get("form", ""),
             player.get("ep_next", ""),
             player.get("total_points", ""),
@@ -662,7 +721,7 @@ def print_players(players):
             f"{player.get('chance_of_playing_next_round', '')}%" if player.get("chance_of_playing_next_round") is not None else "High",
             player.get("news", "")
         ])
-    headers = ["Name", "Rating", "Pos", "Cost", "Form", "Exp Pts", "Pts", "Mins", "Pts/m", "Owned", "Chance of PLaying", "News"]
+    headers = ["Name", "Team", "Rating", "Pos", "Cost", "Form", "Exp Pts", "Pts", "Mins", "Pts/m", "Owned", "Chance of PLaying", "News"]
     print(tabulate(table_data, headers=headers, tablefmt="grid"))
 
 
@@ -675,9 +734,9 @@ def print_replacement_impact(player, candidates):
     Returns: print of replacement players cost impact
     """
     # Print financial impact
-    player_cost = player.get("now_cost", "")
+    player_cost = player.get("now_cost(m)", "")
     for i, candidate in enumerate(candidates, 1):
-        cost_diff = (candidate.get("now_cost", "") - player_cost) /10
+        cost_diff = (candidate.get("now_cost(m)", "") - player_cost)
         if cost_diff > 0:
             cost_str = f"£{cost_diff:.1f}m more"
         elif cost_diff < 0:
@@ -744,6 +803,10 @@ if __name__ == "__main__":
         for player in players:
             normalized = ((player["rating"] - min_rating) / (max_rating - min_rating)) * 100
             player["normalized_rating"] = round(normalized, 2)
+        
+        # After calculating normalized_rating remove rating
+        for player in players:
+            player.pop("rating", None)  # Returns None if key doesn't exist
 
         # Sort normalized rated players into a dic of GKP, DEF, MID, FWD
         sorted_players = sort_players(players)
@@ -809,11 +872,12 @@ if __name__ == "__main__":
                     # Get a list a 4 replacement players for player
                     candidates = find_replacements(player, bank, sorted_players, sorted_current)
                     player_name = player.get("web_name", "")
-                    player_pos = POS_MAP.get(player.get("element_type"), "")
-                    player_cost = player.get("now_cost", "") /10
+                    player_pos = player.get("pos", "")
+                    player_cost = player.get("now_cost(m)", "")
                     player_rating = player.get("normalized_rating", "")
+                    player_team = player.get("team_name", "")
                     print("\n" + "=" * 60)
-                    print(f"REPLACEMENT OPTIONS FOR: {player_name} ({player_pos}, £{player_cost}m, Rating: {player_rating})")
+                    print(f"REPLACEMENT OPTIONS FOR: {player_name} - {player_team} ({player_pos}, £{player_cost}m, Rating: {player_rating})")
                     print("=" * 60)
                     # Print replacement players, if there are any
                     if candidates:
@@ -823,20 +887,16 @@ if __name__ == "__main__":
                     else:
                         print("No suitable replacements found within budget.")
 
-                # Prepare the AI prompt for transfer mode
-                # Trim keys to the keep_keys items and convert element_type to GKP, DEF ect
-                transfers_trimmed = {
-                    player_name: [
-                        {
-                            k: (POS_MAP.get(v, v) if k == "element_type" else v)
-                            for k, v in player.items()
-                            if k in AI_PLAYER_ATTRIBUTES
-                        }
-                        for player in replacements
-                    ]
-                    for player_name, replacements in player_replacement_options.items()
+                # Prepare the AI prompt for transfer mode (full data, no trimming)
+                transfers_full = {
+                    player.get("web_name", ""): {
+                        "current": player,  # full current player dict
+                        "candidates": replacements  # list of full candidate dicts
+                    }
+                    for player, replacements in zip(sorted_current[:num_of_replacements], player_replacement_options.values())
                 }
-                AI_PROMPT = json.dumps(transfers_trimmed, ensure_ascii=False)
+
+                AI_PROMPT = json.dumps(transfers_full, ensure_ascii=False, indent=2)
 
             else:
                 print("\n")
@@ -848,6 +908,14 @@ if __name__ == "__main__":
         #  --- Wildcard Mode ---
 
         elif mode == "w":
+            # Find out the current team total cost from the user
+            total_team_cost = -1
+            while not 0 <= total_team_cost <= 100:
+                try:
+                    total_team_cost = float(input("Enter the current total value of your team (0-100): "))
+                except ValueError:
+                    print("Please enter a valid number between 0 and 100")
+
             # Shows best players from each position
             print("\n")
             print("=" * 60)
@@ -856,10 +924,10 @@ if __name__ == "__main__":
 
             # Create a dict with the required amount of players per position
             wildcard_trimmed = {
-                "GKP": sorted_players["GKP"][:8],
-                "DEF": sorted_players["DEF"][:10],
-                "MID": sorted_players["MID"][:10], 
-                "FWD": sorted_players["FWD"][:8]
+                "GKP": sorted_players["GKP"][:5],
+                "DEF": sorted_players["DEF"][:15],
+                "MID": sorted_players["MID"][:15], 
+                "FWD": sorted_players["FWD"][:10]
             }
 
             # Print tables for each position
@@ -878,13 +946,16 @@ if __name__ == "__main__":
                 print_players(wildcard_trimmed[position])
 
             # Prepare AI prompt for the wildcard selection
-            AI_PROMPT = json.dumps(wildcard_trimmed, ensure_ascii=False)
+            AI_PROMPT = json.dumps(wildcard_trimmed, ensure_ascii=False, indent=2)
 
         
         # --- Get and Print AI recommendations ---
 
-        if API_KEY:             
-            resp = ai_fpl_helper(AI_PROMPT, mode)
+        if API_KEY:
+            if mode == "w":             
+                resp = ai_fpl_helper(AI_PROMPT, mode, total_team_cost)
+            else:
+                resp = ai_fpl_helper(AI_PROMPT, mode)
             print("\n" + "=" * 60)
             print("AI Response")
             print("=" * 60)
