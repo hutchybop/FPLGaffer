@@ -1,6 +1,6 @@
 # 🧠 FPLGaffer
 
-**FPLGaffer** is a Python-based Fantasy Premier League (FPL) assistant that helps with weekly transfers or Wildcard selections. Helps you rate all FPL players, review your current team, and discover the best transfer or Wildcard replacements — all with optional AI-powered suggestions using **Groq** and the **Qwen3-32B** model.
+**FPLGaffer** is a Python-based Fantasy Premier League (FPL) assistant that helps with weekly transfers or Wildcard selections. Helps you rate all FPL players, review your current team, and discover the best transfer or Wildcard replacements — all with optional AI-powered suggestions using **Groq**
 
 ---
 
@@ -13,7 +13,7 @@
 - Fetches your FPL team and prints it in an easy-to-read table view.
 
 ✅ **Suggest Best Replacements**  
-- For a user-specified number of team players (up to 6), suggests **4 top replacements** based on normalized ratings and stats.  
+- For a user-specified number of team players (up to 15), suggests **4 top replacements** based on normalized ratings and stats.  
 
 ✅ **AI Transfer Recommendations (Optional)**  
 - Uses **Groq’s Qwen3-32B** model to provide intelligent transfer advice based on player data and team balance.
@@ -43,14 +43,14 @@
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/<your-username>/FPLGaffer.git
+git clone https://github.com/hutchybop/FPLGaffer.git
 cd FPLGaffer
 ```
 
 ### 2. Create a Virtual Environment
 ```bash
-python3 -m venv venv
-source venv/bin/activate
+python3 -m venv .venv
+source .venv/bin/activate
 ```
 
 ### 3. Install Dependencies
@@ -63,15 +63,20 @@ pip install -r requirements.txt
 
 ### 4. Create a `.env` File
 
-Create a `.env` file in the project root and add the following (see included `.envexample`):
+To Create a `.env` copy the included `.env_example` file and fill in the required keys:
+
+```bash
+cp .env_example .env
+```
 
 ```bash
 FPL_TEAM_ID=YOUR_FPL_TEAM_ID
 GROQ_API_KEY_FREE=YOUR_FREE_GROQ_API_KEY
 GROQ_API_KEY_PAID=YOUR_PAID_GROQ_API_KEY
+AI_MODEL=YOUR_PREFERED_GROQ_AI_MODEL # (Default is set in /config/constants.py)
 ```
 
-Both keys are optional, but the app will use them as follows:
+Both `GROQ` keys are optional, but if included, the app will use them as follows:
 
 - If **both** keys are present → it will **use the free key by default** and **automatically fall back** to the paid key if the free tier’s limits are exceeded.  
 - If only the **free key** is provided → it will only use the free tier (some large or complex requests may fail).  
@@ -108,15 +113,15 @@ Use their respective API keys for `GROQ_API_KEY_FREE` and `GROQ_API_KEY_PAID`.
 ## 🚀 Run the Script
 Once your `.env` is configured:
 ```bash
-python3 FPLGaffer.py.py
+python3 FPLGaffer.py
 ```
 
 You’ll be prompted to:
-- Choose how many players to replace (up to 6)  
+- Choose mode - Transfer (t) or Wildcard (w)
 
 ---
 
-## 🧩 Example Output
+## 🧩 Example Output (Transfer Mode)
 
 ```
 ============================================================
@@ -204,14 +209,13 @@ strong Liverpool support.
 ## 🧭 Future Plans
 
 - 🌐 **Web-based Interface:** Interactive GUI for easier team management.  
-- 🃏 **Wildcard Optimizer:** Automatically build your best squad when using the wildcard chip.  
 
 ---
 
 ## 🧰 Tech Stack
 
 - **Python 3**
-- **Groq API** (`qwen/qwen3-32b`)
+- **Groq API**
 - **dotenv** for environment management
 - **PrettyTable / tabulate** for clean console output
 - **requests / FPL API** for player and team data

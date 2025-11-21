@@ -21,7 +21,7 @@ FREE_API_KEY = os.getenv("GROQ_API_KEY_FREE")
 PAID_API_KEY = os.getenv("GROQ_API_KEY_PAID")
 BASE_URL = "https://api.groq.com/openai/v1"
 # AI_MODEL = "qwen/qwen3-32b"
-AI_MODEL = "llama-3.3-70b-versatile"
+AI_MODEL = os.getenv("AI_MODEL") or "llama-3.3-70b-versatile"
 AI_PROMPT = ""
 
 
