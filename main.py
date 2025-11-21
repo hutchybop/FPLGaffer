@@ -55,7 +55,6 @@ if __name__ == "__main__":
     # Create current team list and sort
     sorted_current = sort.sort_current_team(sorted_players, picks_pids)
     
-
     try:
         
         # --- Transfer Mode ---

@@ -13,11 +13,11 @@ def transfer(bank, sorted_players, sorted_current):
 
     # Get user input for how many players to show replacements for
     num_of_replacements = -1
-    while not 0 <= num_of_replacements <= 6:
+    while not 0 <= num_of_replacements <= 15:
         try:
-            num_of_replacements = int(input("How many players do you want to show replacements for? (0-6) "))
+            num_of_replacements = int(input("How many players do you want to show replacements for? (0-15) "))
         except ValueError:
-            print("Please enter a valid number between 0 and 6")
+            print("Please enter a valid number between 0 and 15")
 
     # Compute min and max rating for each position
     rating_ranges = {
