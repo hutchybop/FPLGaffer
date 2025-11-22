@@ -1,5 +1,4 @@
 test_runs/
-myenv/
 .env
 reports/
 __pycache__/
@@ -7,3 +6,4 @@ __pycache__/
 *.pyo
 *.pyd
 push.sh
+gaffer/
