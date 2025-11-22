@@ -16,7 +16,7 @@
 - For a user-specified number of team players (up to 15), suggests **4 top replacements** based on normalized ratings and stats.  
 
 ✅ **AI Transfer Recommendations (Optional)**  
-- Uses **Groq’s Qwen3-32B** model to provide intelligent transfer advice based on player data and team balance.
+- Uses **Groq’s AI** model to provide intelligent transfer advice based on player data and team balance.
 
 ✅ **Game Week report text file creatation**  
 - As well as printing to the terminal, a game week report is created in the current directory. (See included Example_GW_report.txt) 
@@ -32,7 +32,7 @@
 - Fetches the top FPL players in each position and prints it in an easy-to-read table view. 
 
 ✅ **AI Wildcard Recommendations (Optional)**  
-- Uses **Groq’s Qwen3-32B** model to provide intelligent Wildcard advice, within FPL total player and price limits.
+- Uses **Groq’s AI** model to provide intelligent Wildcard advice, within FPL total player and price limits.
 
 ✅ **Wildcard report text file creatation**  
 - As well as printing to the terminal, a Wildcard report is created in the current directory. (See included Example_Wildcard_report.txt) 
