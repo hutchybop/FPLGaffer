@@ -123,6 +123,8 @@ You’ll be prompted to:
 
 ## 🧩 Example Output (Transfer Mode)
 
+Examples of both Transfer and Wildcard mode outputs are also avaiable in the provided files.
+
 ```
 ============================================================
 POSITIONAL MIN AND MAX RATINGS
