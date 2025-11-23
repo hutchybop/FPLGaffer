@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import RobustScaler
+from sklearn.preprocessing import StandardScaler, MinMaxScaler, QuantileTransformer
 from pprint import pprint
 
 
@@ -31,7 +31,7 @@ def compute_ml_ratings(players, attribute_weights):
         df[col] = df[col].apply(safe_float)
 
     # ----- Apply RobustScaler -----
-    scaler = RobustScaler()
+    scaler = StandardScaler()
     scaled_values = scaler.fit_transform(df[numeric_attrs])
     scaled_df = pd.DataFrame(scaled_values, columns=numeric_attrs)
 
@@ -68,6 +68,7 @@ def compute_ml_ratings(players, attribute_weights):
 
     # Calculated final score
     final_scores = normalized * availability * fix_factor.values * strength_scaled.values
+    print(final_scores)
 
     # ----- Final rating 0–100 -----
     final_scores = np.clip(final_scores * 100, 0, 100)
