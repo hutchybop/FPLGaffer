@@ -21,7 +21,6 @@ if __name__ == "__main__":
     # Fetch and process data
     bootstrap_data = settings.fetch_bootstrap_data()
     players = settings.format_all_players(bootstrap_data)
-    ranges = settings.build_attribute_ranges(players)
     gw = settings.get_current_gameweek(bootstrap_data)
     bank, picks_pids = settings.my_picks(gw)
 
@@ -48,7 +47,7 @@ if __name__ == "__main__":
     # Calculate player ratings and add to player dicts
     players = ratings.compute_ml_ratings(players, weights)
 
-    # Sort normalized rated players into a dic of GKP, DEF, MID, FWD
+    # Sort rated players into a dic of GKP, DEF, MID, FWD
     sorted_players = sort.sort_players(players)
 
     # Create current team list and sort

@@ -104,6 +104,14 @@ def team_stats(bootstrap_data, fixture_data, num_fix=3):
         team_data[team_id]["fix_diff"] = statistics.mean(difficulties) if difficulties else 2.5
     return team_data
 
+def safe_chance(v):
+    if v in [None, "None", ""]:
+        return float(100)  # assume 100% if missing
+    try:
+        return float(v)
+    except Exception as e:
+        return 100.0  # fallback
+
 
 def format_all_players(bootstrap_data):
     """
@@ -128,7 +136,7 @@ def format_all_players(bootstrap_data):
             "team_strength": team_info["strength"],
             "team_fix_dif": team_info["fix_diff"],
             "status": el.get("status", ""),
-            "chance_of_playing_next_round": el.get("chance_of_playing_next_round", ""),
+            "chance_of_playing_next_round": safe_chance(el.get("chance_of_playing_next_round")),
             "news": el.get("news", ""),
             "minutes": el.get("minutes", ""),
             "goals_scored": el.get("goals_scored", ""),
@@ -157,33 +165,6 @@ def format_all_players(bootstrap_data):
         }
         players.append(player)
     return players
-
-
-def build_attribute_ranges(players):
-    """
-    Build min/max ranges for each numeric attribute across all players.
-    Args:
-        players: List of player dict with team stats (format_all_players)
-    Returns:
-        ranges: {attribute: {min: float, max: float}}
-    """
-    ranges = {}
-    for key in players[0].keys():
-        # Skip meta fields
-        if key in ["web_name", "team_name", "status", "news", "element_type"]:
-            continue
-        # Try converting values to float; skip non-numeric
-        values = []
-        for p in players:
-            try:
-                val = float(p.get(key, 0))
-                if not (val is None or val != val):  # not None or NaN
-                    values.append(val)
-            except:
-                pass
-        if values:
-            ranges[key] = {"min": min(values), "max": max(values)}
-    return ranges
 
 
 def get_current_gameweek(bootstrap_data):

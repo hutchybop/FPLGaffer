@@ -60,7 +60,7 @@ WC_WEIGHTS = {
     "goals_conceded_per_90": -1.8,             # Slightly reduced
     "expected_goals_conceded": -1.3,           # Slightly reduced
     "expected_goals_conceded_per_90": -1.3,    # Slightly reduced
-    # multipliers (keep at 0)
+    # multipliers (keep at 0 or will cause nan ratings)
     "team_strength": 0.0,
     "team_fix_dif": 0.0,
     "chance_of_playing_next_round": 0.0
@@ -96,7 +96,7 @@ TRANSFER_WEIGHTS = {
     "goals_conceded_per_90": -2.5,             # Increased
     "expected_goals_conceded": -2.0,           # Increased - fixture difficulty
     "expected_goals_conceded_per_90": -2.0,    # Increased
-    # multipliers (keep at 0)
+    # multipliers (keep at 0 or will cause nan ratings)
     "team_strength": 0.0,
     "team_fix_dif": 0.0,
     "chance_of_playing_next_round": 0.0

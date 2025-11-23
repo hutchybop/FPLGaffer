@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import RobustScaler
+from pprint import pprint
 
 
 def compute_ml_ratings(players, attribute_weights):
@@ -19,8 +20,11 @@ def compute_ml_ratings(players, attribute_weights):
     # ----- Convert to DataFrame -----
     df = pd.DataFrame(players)
 
-    # Keep only attributes that appear in weights
-    numeric_attrs = [a for a in attribute_weights.keys() if a in df.columns]
+    # Keep only attributes that appear in weights that are not 0.0
+    numeric_attrs = [
+        a for a, w in attribute_weights.items()
+        if a in df.columns and float(w) != 0.0
+    ]
 
     # Convert numeric columns safely
     for col in numeric_attrs:
@@ -55,12 +59,14 @@ def compute_ml_ratings(players, attribute_weights):
         lambda v: safe_float(v) / 100 if v not in ("", None) else 1.0
     ).values
 
-    fix_factor = 1.0 + (2.5 - df["team_fix_dif"].apply(safe_float)) * 0.05
+    df["team_fix_dif"] = df["team_fix_dif"].apply(safe_float)
+    fix_factor = 1.0 + (2.5 - df["team_fix_dif"]) * 0.05
     strength = df["team_strength"].apply(safe_float)
 
     # Convert FPL team strength numbers (1–5) to 100 baseline
     strength_scaled = 1.0 + ((strength - 100) / 1000.0)
 
+    # Calculated final score
     final_scores = normalized * availability * fix_factor.values * strength_scaled.values
 
     # ----- Final rating 0–100 -----

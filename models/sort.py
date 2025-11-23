@@ -19,18 +19,12 @@ def sort_players(players):
         # Defining the new key values
         now_cost = round(player.get("now_cost", 0) / 10, 1)
         team_fix_dif = round(player.get("team_fix_dif", 0), 2)
-        chance_playing = (
-            100
-            if player.get("chance_of_playing_next_round") in [None, "None", ""]
-            else player.get("chance_of_playing_next_round")
-        )
         status = constants.STATUS_MAP.get(player.get("status", "a"), "available")
         # Apply transformations
         player["pos"] = pos_key
         player["now_cost(m)"] = now_cost
         player["team_fix_dif"] = team_fix_dif
         player["status"] = status
-        player["chance_of_playing_next_round"] = chance_playing
         # Remove unwanted keys
         player.pop("now_cost", None)
         player.pop("value_form", None)
