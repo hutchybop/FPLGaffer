@@ -19,24 +19,6 @@ def transfer(bank, sorted_players, sorted_current):
         except ValueError:
             print("Please enter a valid number between 0 and 15")
 
-    # Compute min and max rating for each position
-    rating_ranges = {
-        pos: {
-            "min": min(p["rating"] for p in players_list),
-            "max": max(p["rating"] for p in players_list)
-        }
-        for pos, players_list in sorted_players.items()
-    }
-
-    # Print positional ratings
-    print("\n")
-    print("=" * 60)
-    print("POSITIONAL MIN AND MAX RATINGS")
-    print("=" * 60)
-    # Print nicely
-    for pos, stats in rating_ranges.items():
-        print(f"{pos}: MAX={stats['max']}, MIN={stats['min']}")
-
     # Print current team in a readable format
     print("\n")
     print("=" * 60)

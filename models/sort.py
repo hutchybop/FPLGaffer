@@ -1,3 +1,5 @@
+import numpy as np
+
 # Local imports
 from config import constants
 
@@ -30,11 +32,35 @@ def sort_players(players):
         player.pop("value_form", None)
         player.pop("value_season", None)
         positions[pos_key].append(player)
-    # Sort each position by rating
+
+    # --- NORMALISE 'rating' PER POSITION ---
+    for pos, group in positions.items():
+        if not group:
+            continue
+
+        ratings = np.array([p["rating"] for p in group], dtype=float)
+        r_min, r_max = ratings.min(), ratings.max()
+
+        # Avoid division by zero when all ratings identical
+        if r_max == r_min:
+            for p in group:
+                p["rating"] = 50.0
+            continue
+
+        # Min-max scale → 0–100
+        scaled = (ratings - r_min) / (r_max - r_min)
+        scaled = np.clip(scaled * 100, 0, 100)
+
+        # Write back into SAME 'rating' key
+        for p, new_rating in zip(group, scaled):
+            p["rating"] = round(float(new_rating), 2)
+
+    # --- SORT BY UPDATED RATING ---
     return {
-        pos: sorted(players_list, key=lambda x: x['rating'], reverse=True)
+        pos: sorted(players_list, key=lambda x: x["rating"], reverse=True)
         for pos, players_list in positions.items()
     }
+
 
 def sort_current_team(sorted_players, picks_pids):
     # Add rated players from current team into a list and sort

@@ -1,6 +1,5 @@
 import os
 
-
 # --- Global Constants ---
 BOOTSTRAP_URL = "https://fantasy.premierleague.com/api/bootstrap-static/"
 FIXTURE_URL = "https://fantasy.premierleague.com/api/fixtures/"
