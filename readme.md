@@ -7,7 +7,8 @@
 ## ⚽ Transfer Mode
 
 ✅ **Rate All FPL Players**  
-- Computes a normalized performance rating (0–100) for every player in the FPL database.  
+- Computes a normalized performance rating (0–100) for every player in the FPL database.
+- Uses RobustScaler from Scikit-Learn to do this.     
 
 ✅ **Display Current Team**  
 - Fetches your FPL team and prints it in an easy-to-read table view.

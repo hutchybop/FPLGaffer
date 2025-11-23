@@ -20,7 +20,7 @@ def print_players(players):
         table_data.append([
             player.get("web_name", ""),
             player.get("team_name", ""),
-            player.get("normalized_rating", ""),
+            player.get("rating", ""),
             player.get("pos", ""),
             f"£{player.get("now_cost(m)", "")}m",
             player.get("form", ""),
@@ -54,7 +54,7 @@ def print_replacement_impact(player, candidates):
             cost_str = f"£{abs(cost_diff):.1f}m less"
         else:
             cost_str = "Same price"
-        print(f"{i}. {candidate['web_name']} - {cost_str} (Rating: {candidate["normalized_rating"]:.1f})")
+        print(f"{i}. {candidate['web_name']} - {cost_str} (Rating: {candidate["rating"]:.1f})")
 
 
 def print_ai_response(API_KEY, resp):

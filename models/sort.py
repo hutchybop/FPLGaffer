@@ -38,7 +38,7 @@ def sort_players(players):
         positions[pos_key].append(player)
     # Sort each position by rating
     return {
-        pos: sorted(players_list, key=lambda x: x['normalized_rating'], reverse=True)
+        pos: sorted(players_list, key=lambda x: x['rating'], reverse=True)
         for pos, players_list in positions.items()
     }
 
@@ -46,5 +46,5 @@ def sort_current_team(sorted_players, picks_pids):
     # Add rated players from current team into a list and sort
     current_team = [p for players_list in sorted_players.values() 
                 for p in players_list if p['id'] in picks_pids]
-    sorted_current = sorted(current_team, key=lambda x: x['normalized_rating'])
+    sorted_current = sorted(current_team, key=lambda x: x['rating'])
     return sorted_current

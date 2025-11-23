@@ -27,5 +27,5 @@ def find_replacements(player, bank, sorted_players, current_team, num_replacemen
             p["chance_of_playing_next_round"] == 100)
     ]
     # Sort replacements best rated first
-    sorted_candidates = sorted(candidates, key=lambda x: x['normalized_rating'], reverse=True)
+    sorted_candidates = sorted(candidates, key=lambda x: x['rating'], reverse=True)
     return sorted_candidates[:num_replacements]

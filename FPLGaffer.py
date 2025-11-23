@@ -46,8 +46,7 @@ if __name__ == "__main__":
     sys.stdout = file_handlers.Tee(sys.stdout, f)
 
     # Calculate player ratings and add to player dicts
-    players = ratings.compute_generic_rating(players, ranges, weights)
-    players = ratings.compute_normalized_rating(players)
+    players = ratings.compute_ml_ratings(players, weights)
 
     # Sort normalized rated players into a dic of GKP, DEF, MID, FWD
     sorted_players = sort.sort_players(players)

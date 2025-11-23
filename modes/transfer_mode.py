@@ -22,8 +22,8 @@ def transfer(bank, sorted_players, sorted_current):
     # Compute min and max rating for each position
     rating_ranges = {
         pos: {
-            "min": min(p["normalized_rating"] for p in players_list),
-            "max": max(p["normalized_rating"] for p in players_list)
+            "min": min(p["rating"] for p in players_list),
+            "max": max(p["rating"] for p in players_list)
         }
         for pos, players_list in sorted_players.items()
     }
@@ -60,7 +60,7 @@ def transfer(bank, sorted_players, sorted_current):
             player_name = player.get("web_name", "")
             player_pos = player.get("pos", "")
             player_cost = player.get("now_cost(m)", "")
-            player_rating = player.get("normalized_rating", "")
+            player_rating = player.get("rating", "")
             player_team = player.get("team_name", "")
             print("\n" + "=" * 60)
             print(f"REPLACEMENT OPTIONS FOR: {player_name} - {player_team} ({player_pos}, £{player_cost}m, Rating: {player_rating})")
