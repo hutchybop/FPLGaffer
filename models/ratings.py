@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import StandardScaler, MinMaxScaler, QuantileTransformer
+from sklearn.preprocessing import StandardScaler, MinMaxScaler, QuantileTransformer, RobustScaler
 from pprint import pprint
 
 
@@ -30,10 +30,20 @@ def compute_ml_ratings(players, attribute_weights):
     for col in numeric_attrs:
         df[col] = df[col].apply(safe_float)
 
-    # ----- Apply RobustScaler -----
-    scaler = StandardScaler()
+    # ----- QuantileTransformer -----
+    # Add small noise to separate same values
+    df[numeric_attrs] += np.random.normal(0, 1e-5, df[numeric_attrs].shape)
+    # Choose smooth quantile resolution
+    n_quantiles = min(200, len(players))
+    scaler = QuantileTransformer(
+        output_distribution="uniform",
+        n_quantiles=n_quantiles,
+        subsample=50000,
+        random_state=0
+    )
     scaled_values = scaler.fit_transform(df[numeric_attrs])
     scaled_df = pd.DataFrame(scaled_values, columns=numeric_attrs)
+
 
     # ----- Apply weights -----
     weighted_scores = np.zeros(len(df))
@@ -68,9 +78,11 @@ def compute_ml_ratings(players, attribute_weights):
 
     # Calculated final score
     final_scores = normalized * availability * fix_factor.values * strength_scaled.values
-    print(final_scores)
-
+    
     # ----- Final rating 0–100 -----
+    mini = final_scores.min()
+    maxi = final_scores.max()
+    final_scores = (final_scores - mini) / (maxi - mini)
     final_scores = np.clip(final_scores * 100, 0, 100)
 
     # Insert rating back into players dict
