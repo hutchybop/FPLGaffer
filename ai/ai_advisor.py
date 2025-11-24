@@ -3,7 +3,6 @@ import re
 
 #  Local imports
 from config import constants
-from ai import ai_prompt, ai_advisor
 
 
 def ai_fpl_helper(prompt, SYSTEM_PROMPT, client_free, client_paid, API_KEY):
@@ -13,10 +12,10 @@ def ai_fpl_helper(prompt, SYSTEM_PROMPT, client_free, client_paid, API_KEY):
         prompt: json of players with replacements
     Returns:
         wrapped: str of ai response
-    """ 
+    """
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
-        {"role": "user", "content": prompt}
+        {"role": "user", "content": prompt},
     ]
     # No keys configured
     if not API_KEY:

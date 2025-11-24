@@ -36,7 +36,7 @@ WC_WEIGHTS = {
     "bps": 0.8,
     "total_points": 2.2,
     "points_per_game": 3.0,
-    "form": 1.8,         # lowered (too noisy)
+    "form": 1.8,  # lowered (too noisy)
     "ep_next": 1.2,
     "value_form": 2.2,
     "value_season": 2.3,
@@ -62,7 +62,7 @@ WC_WEIGHTS = {
     # multipliers (keep at 0 or will cause nan ratings)
     "team_strength": 0.0,
     "team_fix_dif": 0.0,
-    "chance_of_playing_next_round": 0.0
+    "chance_of_playing_next_round": 0.0,
 }
 TRANSFER_WEIGHTS = {
     "minutes": 3.0,
@@ -72,8 +72,8 @@ TRANSFER_WEIGHTS = {
     "bps": 1.2,
     "total_points": 2.0,
     "points_per_game": 2.0,
-    "form": 4.8,          # big increase
-    "ep_next": 4.0,       # key for transfers
+    "form": 4.8,  # big increase
+    "ep_next": 4.0,  # key for transfers
     "value_form": 0.8,
     "value_season": 0.5,
     "expected_goals": 3.4,
@@ -98,6 +98,5 @@ TRANSFER_WEIGHTS = {
     # multipliers (keep at 0 or will cause nan ratings)
     "team_strength": 0.0,
     "team_fix_dif": 0.0,
-    "chance_of_playing_next_round": 0.0
+    "chance_of_playing_next_round": 0.0,
 }
-

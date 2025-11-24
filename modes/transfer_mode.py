@@ -15,7 +15,9 @@ def transfer(bank, sorted_players, sorted_current):
     num_of_replacements = -1
     while not 0 <= num_of_replacements <= 15:
         try:
-            num_of_replacements = int(input("How many players do you want to show replacements for? (0-15) "))
+            num_of_replacements = int(
+                input("How many players do you want to show replacements for? (0-15) ")
+            )
         except ValueError:
             print("Please enter a valid number between 0 and 15")
 
@@ -38,14 +40,19 @@ def transfer(bank, sorted_players, sorted_current):
         player_replacement_options = {}
         for player in sorted_current[:num_of_replacements]:
             # Get a list a 4 replacement players for player
-            candidates = replacements.find_replacements(player, bank, sorted_players, sorted_current)
+            candidates = replacements.find_replacements(
+                player, bank, sorted_players, sorted_current
+            )
             player_name = player.get("web_name", "")
             player_pos = player.get("pos", "")
             player_cost = player.get("now_cost(m)", "")
             player_rating = player.get("rating", "")
             player_team = player.get("team_name", "")
             print("\n" + "=" * 60)
-            print(f"REPLACEMENT OPTIONS FOR: {player_name} - {player_team} ({player_pos}, £{player_cost}m, Rating: {player_rating})")
+            print(
+                f"REPLACEMENT OPTIONS FOR: {player_name} - {player_team} "
+                f"({player_pos}, £{player_cost}m, Rating: {player_rating})"
+            )
             print("=" * 60)
             # Print replacement players, if there are any
             if candidates:
@@ -59,9 +66,12 @@ def transfer(bank, sorted_players, sorted_current):
         transfers_full = {
             player.get("web_name", ""): {
                 "current": player,  # full current player dict
-                "candidates": replacements  # list of full candidate dicts
+                "candidates": replacements,  # list of full candidate dicts
             }
-            for player, replacements in zip(sorted_current[:num_of_replacements], player_replacement_options.values())
+            for player, replacements in zip(
+                sorted_current[:num_of_replacements],
+                player_replacement_options.values(),
+            )
         }
 
         AI_PROMPT = json.dumps(transfers_full, ensure_ascii=False, indent=2)

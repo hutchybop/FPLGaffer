@@ -5,14 +5,17 @@ def ai_transfer_prompt():
         Never include <think> or hidden reasoning steps.
         ONLY ever return the suggested transfer and the reason.
 
-        Each key in the JSON represents a player currently in the user's team (a potential transfer OUT).
+        Each key in the JSON represents a player currently in the user's team
+        (a potential transfer OUT).
         Each value contains:
         - "current": the full player data for that team player.
-        - "candidates": a list of full player data dicts representing possible replacements.
+        - "candidates": a list of full player data dicts representing
+          possible replacements.
 
         Your task:
         - Review **all** possible transfers (OUT → IN) across the dataset.
-        - Choose **only one** transfer that would provide the greatest overall improvement for the team.
+        - Choose **only one** transfer that would provide the greatest overall
+          improvement for the team.
         - Only recommend a transfer if it clearly improves the team.
         - Base your decision solely on the provided player data.
         - Explain your reasoning briefly and clearly in plain language.
@@ -34,7 +37,8 @@ def ai_wildcard_prompt(total_team_cost):
         ONLY ever return the suggested total cost and squad players.
 
         You will receive a JSON object with four keys: GKP, DEF, MID, FWD.
-        Each key contains a list of top-rated players for that position, including multiple attributes.
+        Each key contains a list of top-rated players for that position,
+        including multiple attributes.
 
         Your task:
             - Build the **optimal 15-player FPL squad** using only the provided players.
@@ -45,33 +49,38 @@ def ai_wildcard_prompt(total_team_cost):
                 • 3 Forwards (FWD)
                 • Maximum **3 players from any one team**
                 • **Total cost must not exceed £{total_team_cost}m**
-                • Do not include any duplicate players — every player in the 15-man squad must be unique and selected only once
+                • Do not include any duplicate players — every player in the 15-man
+                  squad must be unique and selected only once
             - Carry out post selection total cost validation
-                - Add up the exact value of each player and confirm the total is equal to or below {total_team_cost}
+                - Add up the exact value of each player and confirm the total is
+                  equal to or below {total_team_cost}
             - Before outputting your selection, validate all constraints:
                 - Total cost ≤ £{total_team_cost}m (do NOT exceed)
                 - No more than 3 players from any single team
                 - Exact position counts (2 GKP, 5 DEF, 5 MID, 3 FWD)
-            - If any constraint is violated, replace players to satisfy the rules **before producing output**.
+            - If any constraint is violated, replace players to satisfy the rules
+              **before producing output**.
 
         Selection priorities:
             1. Follow budget and position rules exactly (strict limit)
             2. Maximum 3 players per team
             3. Maximize expected points/performance using the provided player stats
-            4. Choose realistic budget-friendly players if necessary to stay under £{total_team_cost}m
+            4. Choose realistic budget-friendly players if necessary to stay
+               under £{total_team_cost}m
 
         Never include <think> or hidden reasoning steps.
-        ONLY ever return the suggested total cost and optimal 15-player FPL squad players (2 GKP, 5 DEF, 5 MID, 3 FWD).
+        ONLY ever return the suggested total cost and optimal 15-player FPL squad
+        players (2 GKP, 5 DEF, 5 MID, 3 FWD).
 
         Output format (plain text only, no JSON):
             Total cost: £<total team cost> (Must not exceed £{total_team_cost}m)
 
             Squad:
             GKP(1/2) Player (Team, £cost) - short reasoning
-            GKP(2/2) Player (Team, £cost) - short reasoning 
-            DEF(1/5) Player (Team, £cost) - short reasoning 
-            DEF(2/5) Player (Team, £cost) - short reasoning 
-            DEF(3/5) Player (Team, £cost) - short reasoning 
+            GKP(2/2) Player (Team, £cost) - short reasoning
+            DEF(1/5) Player (Team, £cost) - short reasoning
+            DEF(2/5) Player (Team, £cost) - short reasoning
+            DEF(3/5) Player (Team, £cost) - short reasoning
             DEF(4/5) Player (Team, £cost) - short reasoning
             DEF(5/5) Player (Team, £cost) - short reasoning
             MID(1/5) Player (Team, £cost) - short reasoning
@@ -97,7 +106,8 @@ def ai_wildcard_prompt(total_team_cost):
             Team Total Cost:
             Add the cost of each player together (must not exceed 100)
             Example:
-            5.8 + 4.0 + 6.5 + 5.5 + 5.0 + 5.0 + 4.1 + 12.5 + 7.0 + 6.0 + 7.5 + 6.0 + 14.0 + 6.5 + 4.5 = 99.6
+            5.8 + 4.0 + 6.5 + 5.5 + 5.0 + 5.0 + 4.1 + 12.5 + 7.0 + 6.0 + 7.5 + 6.0 +
+            14.0 + 6.5 + 4.5 = 99.6
 
         Example output:
             Total cost: £99.6m
@@ -130,6 +140,7 @@ def ai_wildcard_prompt(total_team_cost):
             BOU - 1
             SHU - 1
             Team Cost:
-            5.8 + 4.0 + 6.5 + 5.5 + 5.0 + 5.0 + 4.1 + 12.5 + 7.0 + 6.0 + 7.5 + 6.0 + 14.0 + 6.5 + 4.5 = 99.6
+            5.8 + 4.0 + 6.5 + 5.5 + 5.0 + 5.0 + 4.1 + 12.5 + 7.0 + 6.0 + 7.5 + 6.0 +
+            14.0 + 6.5 + 4.5 = 99.6
     """
     return wildcard_prompt

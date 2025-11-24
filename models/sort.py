@@ -6,7 +6,8 @@ from config import constants
 
 def sort_players(players):
     """
-    Sort players into positions and by rating, while cleaning and formatting each player dict.
+    Sort players into positions and by rating, while cleaning and formatting each
+    player dict.
     Args:
         players: list of player dicts (format_all_players)
     Ruturns:
@@ -64,7 +65,11 @@ def sort_players(players):
 
 def sort_current_team(sorted_players, picks_pids):
     # Add rated players from current team into a list and sort
-    current_team = [p for players_list in sorted_players.values() 
-                for p in players_list if p['id'] in picks_pids]
-    sorted_current = sorted(current_team, key=lambda x: x['rating'])
+    current_team = [
+        p
+        for players_list in sorted_players.values()
+        for p in players_list
+        if p["id"] in picks_pids
+    ]
+    sorted_current = sorted(current_team, key=lambda x: x["rating"])
     return sorted_current

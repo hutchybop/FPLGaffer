@@ -24,16 +24,24 @@ def ai_client():
     print("AI API KEY STATUS")
     print("=" * 60)
     if constants.FREE_API_KEY and constants.PAID_API_KEY:
-        client_free = OpenAI(base_url=constants.BASE_URL, api_key=constants.FREE_API_KEY)
-        client_paid = OpenAI(base_url=constants.BASE_URL, api_key=constants.PAID_API_KEY)
+        client_free = OpenAI(
+            base_url=constants.BASE_URL, api_key=constants.FREE_API_KEY
+        )
+        client_paid = OpenAI(
+            base_url=constants.BASE_URL, api_key=constants.PAID_API_KEY
+        )
         print("Both FREE and PAID AI API keys avaliable")
         print("Will revert to PAID if free limits are met")
     elif not constants.FREE_API_KEY and constants.PAID_API_KEY:
-        client_paid = OpenAI(base_url=constants.BASE_URL, api_key=constants.PAID_API_KEY)
+        client_paid = OpenAI(
+            base_url=constants.BASE_URL, api_key=constants.PAID_API_KEY
+        )
         client_free = None
         print("Only PAID API KEY available, you will be charged per request")
     elif not constants.PAID_API_KEY and constants.FREE_API_KEY:
-        client_free = OpenAI(base_url=constants.BASE_URL, api_key=constants.FREE_API_KEY)
+        client_free = OpenAI(
+            base_url=constants.BASE_URL, api_key=constants.FREE_API_KEY
+        )
         client_paid = None
         print("Only FREE AI API key available")
     else:
@@ -52,7 +60,7 @@ def fetch_fixture_data():
         response: json of all FPL fixture data
     """
     response = requests.get(constants.FIXTURE_URL)
-    response.raise_for_status() # Stops code if error in response
+    response.raise_for_status()  # Stops code if error in response
     return response.json()
 
 
@@ -63,33 +71,32 @@ def fetch_bootstrap_data():
         response: json of all FPL bootstrap data
     """
     response = requests.get(constants.BOOTSTRAP_URL)
-    response.raise_for_status() # Stops code if error in response
+    response.raise_for_status()  # Stops code if error in response
     return response.json()
 
 
 def team_stats(bootstrap_data, fixture_data, num_fix=3):
     """
     Pre-calculate fixture difficulties for all teams to avoid repeated calculations.
-    Args: 
+    Args:
         bootstrap_data: json of all the FPL bootstrap data (fetch_bootstrap_data)
         fixture_data: json of all the FPL fixture data (fetch_fixture_data)
         num_fix: num of fixtures to assess (default = 3)
-    Returns: 
+    Returns:
         dict: {team_id: {"name": str, "strength": int, "fix_diff": float}}
     """
     team_data = {}
     # Initialize with team names and strengths
     for team in bootstrap_data["teams"]:
         team_id = team["id"]
-        team_data[team_id] = {
-            "name": team["short_name"],
-            "strength": team["strength"]
-        }
+        team_data[team_id] = {"name": team["short_name"], "strength": team["strength"]}
     # Calculate fixture difficulties for each team
     for team_id in team_data.keys():
         team_fixtures = []
         for fixture in fixture_data:
-            if (fixture["team_h"] == team_id or fixture["team_a"] == team_id) and not fixture["finished"]:
+            if (
+                fixture["team_h"] == team_id or fixture["team_a"] == team_id
+            ) and not fixture["finished"]:
                 team_fixtures.append(fixture)
         # Sort by kickoff time and take next N fixtures
         team_fixtures.sort(key=lambda x: x["kickoff_time"])
@@ -101,15 +108,18 @@ def team_stats(bootstrap_data, fixture_data, num_fix=3):
                 difficulties.append(fixture["team_h_difficulty"])
             else:
                 difficulties.append(fixture["team_a_difficulty"])
-        team_data[team_id]["fix_diff"] = statistics.mean(difficulties) if difficulties else 2.5
+        team_data[team_id]["fix_diff"] = (
+            statistics.mean(difficulties) if difficulties else 2.5
+        )
     return team_data
+
 
 def safe_chance(v):
     if v in [None, "None", ""]:
         return float(100)  # assume 100% if missing
     try:
         return float(v)
-    except Exception as e:
+    except Exception:
         return 100.0  # fallback
 
 
@@ -136,7 +146,9 @@ def format_all_players(bootstrap_data):
             "team_strength": team_info["strength"],
             "team_fix_dif": team_info["fix_diff"],
             "status": el.get("status", ""),
-            "chance_of_playing_next_round": safe_chance(el.get("chance_of_playing_next_round")),
+            "chance_of_playing_next_round": safe_chance(
+                el.get("chance_of_playing_next_round")
+            ),
             "news": el.get("news", ""),
             "minutes": el.get("minutes", ""),
             "goals_scored": el.get("goals_scored", ""),
@@ -161,7 +173,7 @@ def format_all_players(bootstrap_data):
             "penalties_saved": el.get("penalties_saved", ""),
             "goals_conceded": el.get("goals_conceded", ""),
             "expected_goals_conceded": el.get("expected_goals_conceded", ""),
-            "selected_by_percent": el.get("selected_by_percent", "")
+            "selected_by_percent": el.get("selected_by_percent", ""),
         }
         players.append(player)
     return players
@@ -190,7 +202,8 @@ def my_picks(gw):
         bank: num of current team bank in millions
         pick_pids: List of current team players ids
     """
-    squad_url = f"https://fantasy.premierleague.com/api/entry/{constants.TEAM_ID}/event/{gw}/picks/"
+    base_url = "https://fantasy.premierleague.com/api/entry"
+    squad_url = f"{base_url}/{constants.TEAM_ID}/event/{gw}/picks/"
     response = requests.get(squad_url)
     response.raise_for_status()
     picks = response.json()

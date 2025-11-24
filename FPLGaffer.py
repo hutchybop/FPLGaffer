@@ -30,7 +30,7 @@ if __name__ == "__main__":
         mode = input("Choose mode - Transfer (t) or Wildcard (w): ").lower().strip()
         if mode not in ["t", "w"]:
             print("Please enter 't' for Transfer mode or 'w' for Wildcard mode")
-    
+
     # Setting player Attribute weights from user selected mode
     if mode == "t":
         weights, base_name = constants.TRANSFER_WEIGHTS, f"GW_{gw}_report"
@@ -52,25 +52,28 @@ if __name__ == "__main__":
 
     # Create current team list and sort
     sorted_current = sort.sort_current_team(sorted_players, picks_pids)
-    
+
     try:
-        
+
         # --- Transfer Mode ---
         if mode == "t":
             AI_PROMPT = transfer_mode.transfer(bank, sorted_players, sorted_current)
             # --- Get and Print AI recommendations ---
             transfer_prompt = ai_prompt.ai_transfer_prompt()
-            resp = ai_advisor.ai_fpl_helper(AI_PROMPT, transfer_prompt, client_free, client_paid, API_KEY)
+            resp = ai_advisor.ai_fpl_helper(
+                AI_PROMPT, transfer_prompt, client_free, client_paid, API_KEY
+            )
             print_output.print_ai_response(API_KEY, resp)
-        
+
         #  --- Wildcard Mode ---
         elif mode == "w":
             AI_PROMPT, total_team_cost = wildcard_mode.wildcard(sorted_players)
             # --- Get and Print AI recommendations ---
-            wildcard_prompt = ai_prompt.ai_wildcard_prompt(total_team_cost)   
-            resp = ai_advisor.ai_fpl_helper(AI_PROMPT, wildcard_prompt, client_free, client_paid, API_KEY)
+            wildcard_prompt = ai_prompt.ai_wildcard_prompt(total_team_cost)
+            resp = ai_advisor.ai_fpl_helper(
+                AI_PROMPT, wildcard_prompt, client_free, client_paid, API_KEY
+            )
             print_output.print_ai_response(API_KEY, resp)
-
 
     finally:
         # Restore stdout

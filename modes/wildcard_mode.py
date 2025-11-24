@@ -4,12 +4,14 @@ import json
 from utils import format_date, print_output
 
 
-def wildcard(sorted_players):            
+def wildcard(sorted_players):
     # Find out the current team total cost from the user
     total_team_cost = -1
     while not 0 <= total_team_cost <= 100:
         try:
-            total_team_cost = float(input("Enter the current total value of your team (0-100): "))
+            total_team_cost = float(
+                input("Enter the current total value of your team (0-100): ")
+            )
         except ValueError:
             print("Please enter a valid number between 0 and 100")
 
@@ -23,16 +25,16 @@ def wildcard(sorted_players):
     wildcard_trimmed = {
         "GKP": sorted_players["GKP"][:5],
         "DEF": sorted_players["DEF"][:15],
-        "MID": sorted_players["MID"][:15], 
-        "FWD": sorted_players["FWD"][:10]
+        "MID": sorted_players["MID"][:15],
+        "FWD": sorted_players["FWD"][:10],
     }
 
     # Print tables for each position
     positions = [
         ("TOP GOALKEEPERS", "GKP"),
-        ("TOP DEFENDERS", "DEF"), 
+        ("TOP DEFENDERS", "DEF"),
         ("TOP MIDFIELDERS", "MID"),
-        ("TOP FORWARDS", "FWD")
+        ("TOP FORWARDS", "FWD"),
     ]
 
     for title, position in positions:

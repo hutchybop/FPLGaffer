@@ -3,6 +3,7 @@ import os
 
 class Tee:
     """Redirect stdout to both terminal and a file"""
+
     def __init__(self, *files):
         self.files = files
 
@@ -16,7 +17,7 @@ class Tee:
             f.flush()
 
 
-def get_unique_filename(base_name, ext = ".txt", folder="reports"):
+def get_unique_filename(base_name, ext=".txt", folder="reports"):
     """
     Generate a unique filename like base_name.txt, base_name_2.txt, etc.
     Args:

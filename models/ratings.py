@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import StandardScaler, MinMaxScaler, QuantileTransformer, RobustScaler
-from pprint import pprint
+from sklearn.preprocessing import QuantileTransformer
 
 
 def compute_ml_ratings(players, attribute_weights):
@@ -14,7 +13,7 @@ def compute_ml_ratings(players, attribute_weights):
     def safe_float(v):
         try:
             return float(v)
-        except:
+        except Exception:
             return 0.0
 
     # ----- Convert to DataFrame -----
@@ -22,8 +21,7 @@ def compute_ml_ratings(players, attribute_weights):
 
     # Keep only attributes that appear in weights that are not 0.0
     numeric_attrs = [
-        a for a, w in attribute_weights.items()
-        if a in df.columns and float(w) != 0.0
+        a for a, w in attribute_weights.items() if a in df.columns and float(w) != 0.0
     ]
 
     # Convert numeric columns safely
@@ -39,11 +37,10 @@ def compute_ml_ratings(players, attribute_weights):
         output_distribution="uniform",
         n_quantiles=n_quantiles,
         subsample=50000,
-        random_state=0
+        random_state=0,
     )
     scaled_values = scaler.fit_transform(df[numeric_attrs])
     scaled_df = pd.DataFrame(scaled_values, columns=numeric_attrs)
-
 
     # ----- Apply weights -----
     weighted_scores = np.zeros(len(df))
@@ -65,9 +62,11 @@ def compute_ml_ratings(players, attribute_weights):
         normalized = np.zeros(len(df))
 
     # ----- Apply multipliers -----
-    availability = df["chance_of_playing_next_round"].apply(
-        lambda v: safe_float(v) / 100 if v not in ("", None) else 1.0
-    ).values
+    availability = (
+        df["chance_of_playing_next_round"]
+        .apply(lambda v: safe_float(v) / 100 if v not in ("", None) else 1.0)
+        .values
+    )
 
     df["team_fix_dif"] = df["team_fix_dif"].apply(safe_float)
     fix_factor = 1.0 + (2.5 - df["team_fix_dif"]) * 0.05
@@ -77,13 +76,25 @@ def compute_ml_ratings(players, attribute_weights):
     strength_scaled = 1.0 + ((strength - 100) / 1000.0)
 
     # Calculated final score
-    final_scores = normalized * availability * fix_factor.values * strength_scaled.values
-    
+    final_scores = (
+        normalized * availability * fix_factor.values * strength_scaled.values
+    )
+
     # ----- Final rating 0–100 -----
-    mini = final_scores.min()
-    maxi = final_scores.max()
-    final_scores = (final_scores - mini) / (maxi - mini)
-    final_scores = np.clip(final_scores * 100, 0, 100)
+    # Use a more robust scaling approach to prevent clustering
+    mean_score = final_scores.mean()
+    std_score = final_scores.std()
+
+    if std_score > 0:
+        # Z-score normalization, then scale to 0-100
+        z_scores = (final_scores - mean_score) / std_score
+        # Use sigmoid to bound values and preserve differences
+        final_scores = 1 / (1 + np.exp(-z_scores))
+        # Scale to 0-100 range with some padding
+        final_scores = final_scores * 98 + 1  # 1-99 range
+    else:
+        # Fallback if all values are the same
+        final_scores = np.full_like(final_scores, 50.0)
 
     # Insert rating back into players dict
     for p, score in zip(players, final_scores):
