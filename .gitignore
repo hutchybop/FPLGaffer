@@ -8,3 +8,4 @@ __pycache__/
 *.pyd
 push.sh
 gaffer/
+.opencode/
