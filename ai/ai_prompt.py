@@ -1,4 +1,11 @@
 def ai_transfer_prompt():
+    """
+    Generate AI prompt for transfer mode recommendations.
+    Args:
+        None
+    Returns:
+        str: formatted prompt string for AI transfer analysis
+    """
     transfer_prompt = """
         You are an expert Fantasy Premier League (FPL) assistant.
         You will receive a JSON object.
@@ -31,6 +38,13 @@ def ai_transfer_prompt():
 
 
 def ai_wildcard_prompt(total_team_cost):
+    """
+    Generate AI prompt for wildcard mode squad building.
+    Args:
+        total_team_cost: float representing maximum team budget
+    Returns:
+        str: formatted prompt string for AI wildcard squad selection
+    """
     wildcard_prompt = f"""
         You are an expert Fantasy Premier League (FPL) assistant and squad builder.
         Never include <think> or hidden reasoning steps.

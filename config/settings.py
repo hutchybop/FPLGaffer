@@ -8,6 +8,13 @@ from config import constants
 
 
 def validate_team_id():
+    """
+    Validate that FPL team ID is configured in environment variables.
+    Args:
+        None
+    Returns:
+        None: exits program if team ID not found
+    """
     # Validate TEAM_ID is in .env
     if not constants.TEAM_ID:
         print("No FPL team ID found in .env file")
@@ -17,6 +24,14 @@ def validate_team_id():
 
 
 def ai_client():
+    """
+    Initialize and configure AI API clients based on available keys.
+    Args:
+        None
+    Returns:
+        tuple: (API_KEY, client_free, client_paid) - API availability flag and client
+        instances
+    """
     # Create clients
     API_KEY = True
     print("\n")
@@ -115,6 +130,13 @@ def team_stats(bootstrap_data, fixture_data, num_fix=3):
 
 
 def safe_chance(v):
+    """
+    Convert chance of playing value to safe float.
+    Args:
+        v: value representing chance of playing (can be None, string, or number)
+    Returns:
+        float: safe float value (100.0 default for missing/invalid values)
+    """
     if v in [None, "None", ""]:
         return float(100)  # assume 100% if missing
     try:

@@ -24,7 +24,7 @@ AI_MODEL = os.getenv("AI_MODEL") or "llama-3.3-70b-versatile"
 AI_PROMPT = ""
 
 
-# Global weights for all numeric keys in your player dict.
+# Global weights for all numeric keys in player dict.
 # Positive weights = increase rating when high.
 # Negative weights = reduce rating when high (e.g. goals conceded).
 # team/fixture/availability weights set to 0 to use them as multipliers.

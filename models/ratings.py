@@ -6,7 +6,11 @@ from sklearn.preprocessing import QuantileTransformer
 def compute_ml_ratings(players, attribute_weights):
     """
     Compute player ratings using ML scaling + weighted sum.
-    Returns players with player["rating"] (0–100 float).
+    Args:
+        players: list of player dicts with attributes
+        attribute_weights: dict of weights for each player attribute
+    Returns:
+        list: players with added 'rating' key (0–100 float)
     """
 
     # ----- Helper functions -----

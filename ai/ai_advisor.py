@@ -10,8 +10,12 @@ def ai_fpl_helper(prompt, SYSTEM_PROMPT, client_free, client_paid, API_KEY):
     Get AI recommendations for FPL transfers.
     Args:
         prompt: json of players with replacements
+        SYSTEM_PROMPT: system prompt for AI model
+        client_free: OpenAI client for free API usage
+        client_paid: OpenAI client for paid API usage
+        API_KEY: boolean indicating if API key is available
     Returns:
-        wrapped: str of ai response
+        str: formatted AI response text
     """
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},

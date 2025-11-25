@@ -6,6 +6,15 @@ from models import replacements
 
 
 def transfer(bank, sorted_players, sorted_current):
+    """
+    Handle transfer mode interface and generate AI prompt.
+    Args:
+        bank: num of current team bank in millions
+        sorted_players: dict of players per position (sort_players)
+        sorted_current: list of current team player dicts sorted by rating
+    Returns:
+        str: JSON string formatted for AI transfer analysis
+    """
     print("\n")
     print("=" * 60)
     print(f"TRANSFER MODE ({format_date.format_date_with_ordinal()})")

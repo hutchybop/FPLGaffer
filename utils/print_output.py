@@ -81,6 +81,14 @@ def print_replacement_impact(player, candidates):
 
 
 def print_ai_response(API_KEY, resp):
+    """
+    Print AI response with appropriate formatting.
+    Args:
+        API_KEY: boolean indicating if API key is available
+        resp: AI response string
+    Returns:
+        None: prints formatted response to console
+    """
     if API_KEY:
         print("\n" + "=" * 60)
         print("AI Response")

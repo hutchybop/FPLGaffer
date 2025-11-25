@@ -1,14 +1,14 @@
 def find_replacements(player, bank, sorted_players, current_team, num_replacements=4):
     """
     Find replacement candidates for a player.
-        Args:
-            player: dict of player to replace
-            bank: num of current team bank in millions (my_picks)
-            sorted_players: dict of players per position (sort_players)
-            current_team: list of current team player dicts
-            num_replacements: num of number of replacements to give (default = 4)
-        Returns:
-            list of replacement player dicts upto num_replacements
+    Args:
+        player: dict of player to replace
+        bank: num of current team bank in millions (my_picks)
+        sorted_players: dict of players per position (sort_players)
+        current_team: list of current team player dicts
+        num_replacements: num of number of replacements to give (default = 4)
+    Returns:
+        list: replacement player dicts up to num_replacements
     """
     # Calculate max and min price of replacements
     player_cost = player.get("now_cost(m)", 0)

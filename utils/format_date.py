@@ -2,6 +2,13 @@ from datetime import datetime
 
 
 def format_date_with_ordinal():
+    """
+    Format current date with ordinal suffix.
+    Args:
+        None
+    Returns:
+        str: formatted date string (e.g., "Mon 25th Nov")
+    """
     current_date = datetime.now()
     day = current_date.day
     if 4 <= day <= 20 or 24 <= day <= 30:

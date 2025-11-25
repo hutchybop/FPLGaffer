@@ -5,6 +5,13 @@ from utils import format_date, print_output
 
 
 def wildcard(sorted_players):
+    """
+    Handle wildcard mode interface and generate AI prompt.
+    Args:
+        sorted_players: dict of players per position (sort_players)
+    Returns:
+        tuple: (AI_PROMPT, total_team_cost) - JSON string and team budget
+    """
     # Find out the current team total cost from the user
     total_team_cost = -1
     while not 0 <= total_team_cost <= 100:

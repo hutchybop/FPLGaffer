@@ -64,6 +64,14 @@ def sort_players(players):
 
 
 def sort_current_team(sorted_players, picks_pids):
+    """
+    Sort current team players by rating.
+    Args:
+        sorted_players: dict of players per position (sort_players)
+        picks_pids: list of current team player IDs
+    Returns:
+        list: current team player dicts sorted by rating (ascending)
+    """
     # Add rated players from current team into a list and sort
     current_team = [
         p
