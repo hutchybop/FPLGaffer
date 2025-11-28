@@ -1,51 +1,32 @@
-# FPLGaffer - Agent Development Guide
+# FPLGaffer – Agent Guide
 
-## Build/Lint/Test Commands
-
+## Build / Lint / Test
 ```bash
-# Format code with Black
-black .
-
-# Lint code with Flake8
-flake8 .
-
 # Install dependencies
 pip install -r requirements.txt
 
-# Run the main application
+# Format & lint
+black .          # auto‑format (line‑length 88)
+flake8 .         # PEP‑8 checks
+mypy .           # optional static typing
+
+# Run the application
 python3 FPLGaffer.py
+
+# Tests (pytest preferred)
+pytest           # all tests
+pytest -k <test_name>  # run a single test matching <test_name>
 ```
 
-## Code Style Guidelines
+## Code Style
+- **Imports**: std lib → third‑party → local, blank line between groups, alphabetic order.
+- **Formatting**: Black (default settings). No trailing whitespace.
+- **Naming**: `snake_case` for vars/functions, `UPPER_CASE` for constants, `PascalCase` for classes, files in `snake_case.py`.
+- **Types**: Add type hints on public APIs; use `typing` for collections.
+- **Docstrings**: Triple‑quoted, Google style, include Args/Returns.
+- **Error handling**: Wrap external I/O/API in `try/except`, log with `logging`, raise custom exceptions when needed.
+- **Logging**: Module‑level `logger = logging.getLogger(__name__)`.
+- **Testing**: Place tests under `tests/`, name `test_*.py`, use pytest fixtures.
 
-### Formatting
-- Line length: 88 characters (Black default)
-- Target Python version: 3.8+
-- Use Black for auto-formatting
-
-### Import Organization
-1. Standard library imports
-2. Third-party imports (pandas, numpy, requests, openai, etc.)
-3. Local imports (from config, models, utils, ai, modes)
-
-### Naming Conventions
-- Variables and functions: `snake_case`
-- Constants: `UPPER_CASE` 
-- Classes: `PascalCase`
-- Files: `snake_case.py`
-
-### Code Structure
-- Use docstrings with triple quotes for functions
-- Error handling with try/except blocks
-- Environment variables via python-dotenv
-- Data processing with pandas/numpy
-- API calls with requests library
-
-### Key Patterns
-- ML scaling with sklearn.preprocessing.QuantileTransformer
-- Tabular output with tabulate library
-- File I/O with custom Tee class for dual output
-- AI integration via OpenAI client (Groq API)
-
-### Excluded Directories
-- .git, __pycache__, .venv, build, dist, test_runs, reports, gaffer
+## Agent Rules
+No `.cursor/` or `.github/copilot‑instructions.md` files are present, so there are no additional cursor or Copilot rules.
