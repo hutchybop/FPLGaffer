@@ -63,7 +63,7 @@ def ai_fpl_helper(prompt, SYSTEM_PROMPT, client_free, client_paid, API_KEY):
                 max_tokens=600,
             )
         else:
-            return f"AI Error: {e}"
+            return f"AI Error: {e}\nDo you have VPN on..."
     raw = resp.choices[0].message.content.strip()
     cleaned = re.sub(r"<think>.*?</think>", "", raw, flags=re.DOTALL).strip()
     wrapped = "\n".join(textwrap.fill(line, width=120) for line in cleaned.splitlines())
