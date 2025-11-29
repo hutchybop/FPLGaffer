@@ -12,4 +12,3 @@ numpy
 scikit-learn
 black
 flake8
-pre-commit

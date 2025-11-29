@@ -1,32 +1,36 @@
-# FPLGaffer – Agent Guide
+# Agent Guidelines
 
-## Build / Lint / Test
-```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Format & lint
-black .          # auto‑format (line‑length 88)
-flake8 .         # PEP‑8 checks
-mypy .           # optional static typing
-
-# Run the application
-python3 FPLGaffer.py
-
-# Tests (pytest preferred)
-pytest           # all tests
-pytest -k <test_name>  # run a single test matching <test_name>
-```
+## Commands
+- **Build**: `python -m build`
+- **Lint**: `flake8 .` (max line length: 88, ignores E203, W503, E402)
+- **Format**: `black .` (line length: 88)
+- **Test**: `pytest tests/`
+- **Single test**: `pytest tests/test_specific.py::test_function`
 
 ## Code Style
-- **Imports**: std lib → third‑party → local, blank line between groups, alphabetic order.
-- **Formatting**: Black (default settings). No trailing whitespace.
-- **Naming**: `snake_case` for vars/functions, `UPPER_CASE` for constants, `PascalCase` for classes, files in `snake_case.py`.
-- **Types**: Add type hints on public APIs; use `typing` for collections.
-- **Docstrings**: Triple‑quoted, Google style, include Args/Returns.
-- **Error handling**: Wrap external I/O/API in `try/except`, log with `logging`, raise custom exceptions when needed.
-- **Logging**: Module‑level `logger = logging.getLogger(__name__)`.
-- **Testing**: Place tests under `tests/`, name `test_*.py`, use pytest fixtures.
+- **Imports**: Group stdlib, then third-party, then local imports (separated by blank lines)
+- **Formatting**: Use black, 88 char line length
+- **Types**: Use type hints for function parameters and returns
+- **Naming**: snake_case for variables/functions, PascalCase for classes
+- **Error handling**: Use exceptions, not return codes; use sys.exit(1) for fatal errors
+- **Docstrings**: Use triple quotes with Args/Returns sections for functions
 
-## Agent Rules
-No `.cursor/` or `.github/copilot‑instructions.md` files are present, so there are no additional cursor or Copilot rules.
+## Project Structure
+- Main entry: `FPLGaffer.py`
+- Config: `config/` (constants, settings, environment validation)
+- Models: `models/` (ratings, replacements, sorting algorithms)
+- Utils: `utils/` (file handlers, date formatting, output formatting)
+- AI: `ai/` (prompt engineering, AI advisor logic)
+- Modes: `modes/` (transfer_mode, wildcard_mode for different FPL strategies)
+
+## Dependencies
+- Core: requests, openai, python-dotenv
+- Data: pandas, numpy, scikit-learn
+- Formatting: tabulate
+- Dev: black, flake8, setuptools, wheel
+
+## Testing
+- Use pytest
+- Test files: `tests/`
+- Test naming: `test_*.py`
+- Currently no test suite exists - create tests when adding new features

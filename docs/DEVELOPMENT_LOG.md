@@ -1,271 +1,209 @@
 # FPLGaffer Development Log
 
-*Last Updated: November 25, 2025*
+This document tracks the development history of the FPLGaffer project through distinct development sessions identified from git commit history.
 
 ---
 
-## 🎯 Current Session Summary (Latest Work)
+## Session 12 
+### Saturday November 29th
+<br>
 
-### **Most Recent Session: November 25, 2025**
-**Focus: Session Finisher Configuration & Debugging**
+**Summary:** Documentation architecture session focused on creating comprehensive project reference materials and updating development guidelines for improved developer onboarding and project maintenance. 
 
-#### **Latest Session Work: Configuration Fixes**
-**Files Modified:** 2 configuration files
-- **Fixed session finisher configuration** to properly use virtual environment
-- **Updated `.opencode/agent/session_finisher.md`:**
-  - Added explicit config file references
-  - Added override flags to force custom configuration usage
-  - Added debug settings for troubleshooting
-  - Made virtual environment activation mandatory
-- **Enhanced `.opencode/config/fplgaffer.yaml`:**
-  - Added priority and requirement flags for quality tools
-  - Ensured proper virtual environment activation commands
+**Git Branch:** ml_scaling <br>
+**Git commits:** <br>
+*uncommitted changes* 
 
-#### **Previous Session: November 25, 2025**
-**Focus: Project Organization & Documentation Structure**
-- **Created docs/ directory** for centralized documentation
-- **Moved documentation files to docs/:**
-  - `DEVELOPMENT_LOG.md` → `docs/DEVELOPMENT_LOG.md`
-  - `PROJECT_FLOW.md` → `docs/PROJECT_FLOW.md`
-  - `AGENTS.md` → `docs/AGENTS.md`
-- **Kept configuration files in root:** `pyproject.toml`, `.flake8`
-
-#### **Previous Session: November 25, 2025**
-**Commit: `dedbcad` - "update function doc strings"**
-**Focus: Documentation & Code Quality**
-- **Added comprehensive docstrings** across all modules
-- **Created AGENTS.md** - Development guidelines for agentic coding
-- **Created PROJECT_FLOW.md** - Complete architecture reference
-- **Enhanced documentation** in: ai/, config/, models/, modes/, utils/
-
-#### **Previous Session: November 24, 2025**
-**Commit: `31559b5` - "update scaler and add black/flake8 checkers"**
-**Focus: Code Quality & Tooling**
-- **Added Black formatter** configuration (pyproject.toml)
-- **Added Flake8 linting** with project-specific rules
-- **Updated requirements.txt** with development tools
-- **Code formatting** across entire codebase
+**Session git history:** 
+- Create architecture reference documentation - *Added comprehensive ARCHITECTURE_REFERENCE.md with system overview and dependency mapping*
+- Update development log format - *Restored session-based format for better development tracking*
+- Update agent guidelines - *Enhanced AGENTS.md with current project commands and structure*
+- Update project dependencies - *Modified requirements.txt for current development needs*
 
 ---
+<br>
 
-## 📅 Development Timeline
+## Session 11 
+### Friday November 28th
+<br>
 
-### **Phase 1: ML Rating System Overhaul (November 23, 2025)**
-**Major Refactoring Session - 5 commits in one day**
+**Summary:** Final documentation updates to improve agent guidelines and AI error handling warnings for better developer experience. 
 
-#### **Commit Progression:**
-1. `0002aa1` - "change ratings to ml ratings" 
-   - **Major architectural change**: Replaced simple rating system with ML-based approach
-   - **Added sklearn dependency** for QuantileTransformer
-   - **Files impacted:** FPLGaffer.py, models/ratings.py, models/sort.py, modes/transfer_mode.py
+**Git Branch:** ml_scaling <br>
+**Git commits:** <br>
+0e3b221, c4ad80e 
 
-2. `51302f1` - "fix nan error"
-   - **Bug fix**: Resolved NaN values in rating calculations
-   - **Added safe conversion functions** for data processing
-
-3. `a0c84c0` - "add new scaler"
-   - **Enhanced ML algorithm**: Implemented QuantileTransformer
-   - **Added statistical normalization** for player ratings
-
-4. `62709a4` - "update ml scaler"
-   - **Refined ML parameters**: Optimized scaler configuration
-   - **Updated rating weights** in constants.py
-
-5. `b1f1fa6` - "update ratings for pos"
-   - **Position-specific improvements**: Enhanced rating calculations per position
-   - **Updated sorting logic** for better player categorization
-
-**Impact:** This was a **complete rewrite** of the rating system, moving from basic weighted sums to sophisticated ML-based normalization.
-
+**Session git history:** 
+- update Ai error warning - *Improved error messaging for AI API failures*
+- Update docs/agents - *Updated agent guidelines with current project information*
 ---
+<br>
 
-### **Phase 2: Documentation & Setup (November 22, 2025)**
-**Focus: Project Readiness**
+## Session 10 
+### Monday November 25th
+<br>
 
-#### **Commits:**
-- `7346d25` & `76f4b68` - README updates
-- `cdeeaa5` - Merge branch 'restructure' into main
-- `4bf2d74` - "update readme.md and AI_MODEL selection"
-  - **Enhanced .env.example** with AI model configuration
-  - **Improved setup instructions**
+**Summary:** Code quality improvements with comprehensive function documentation and major documentation reorganization into dedicated docs/ directory for better project structure. 
 
+**Git Branch:** main <br>
+**Git commits:** <br>
+dedbcad, ad43781, 8adc5a4 
+
+**Session git history:** 
+- docs: update development log with session finisher configuration fixes - *Updated development log with latest session information*
+- refactor: organize documentation into dedicated docs/ directory - *Moved documentation files to docs/ folder for better organization*
+- update function doc strings - *Added comprehensive docstrings to all functions*
 ---
+<br>
 
-### **Phase 3: AI Integration & File Structure (October 15 - November 21, 2025)**
+## Session 9 
+### Monday November 24th
+<br>
 
-#### **Major Restructure (October 31, 2025)**
-**Commit: `800825e` - "update file structure"**
-**Complete project reorganization:**
-- **Created modular directory structure:**
-  - `ai/` - AI integration modules
-  - `config/` - Configuration and settings
-  - `models/` - Data processing and business logic
-  - `modes/` - Application modes (transfer/wildcard)
-  - `utils/` - Utility functions
-- **Renamed main.py → FPLGaffer.py**
-- **Added __init__.py files** for proper Python package structure
+**Summary:** Code quality improvements by adding black and flake8 linting tools and updating the ML scaler configuration for better rating normalization. 
 
-#### **AI Enhancement (October 15, 2025)**
-**Commit: `8d65b3f` - "update to use free & paid Groq API keys"**
-- **Implemented dual API key system** for cost management
-- **Added fallback logic** from free to paid tier
-- **Enhanced error handling** for API limits
+**Git Branch:** main <br>
+**Git commits:** <br>
+31559b5 
 
+**Session git history:** 
+- update scaler and add black/flake8 checkers - *Added code formatting tools and improved ML scaler configuration*
 ---
+<br>
 
-## 🔄 Feature Evolution Timeline
+## Session 8 
+### Sunday November 23rd
+<br>
 
-### **AI Integration**
-- **October 15**: Free/paid Groq API implementation
-- **October 30**: AI response improvements
-- **November 21**: AI model selection via environment variables
+**Summary:** Major overhaul of the rating system from simple scoring to machine learning-based normalization with QuantileTransformer, including multiple iterations to fix NaN errors and optimize position-specific ratings. 
 
-### **Rating System**
-- **Initial**: Simple weighted sum calculations
-- **November 23**: **Complete ML overhaul** with QuantileTransformer
-- **Current**: Sophisticated statistical normalization with position-specific handling
+**Git Branch:** main <br>
+**Git commits:** <br>
+0002aa1, 51302f1, a0c84c0, 62709a4, b1f1fa6 
 
-### **Project Structure**
-- **Initial**: Flat file structure
-- **October 31**: **Modular restructure** into logical directories
-- **Current**: Clean separation of concerns across 5 main modules
-
-### **Code Quality**
-- **Initial**: Basic Python scripts
-- **November 24**: **Professional tooling** with Black/Flake8
-- **November 25**: **Comprehensive documentation** with docstrings
-
+**Session git history:** 
+- update ratings for pos - *Adjusted rating calculations for position-specific considerations*
+- update ml scaler - *Refined ML scaler configuration for better normalization*
+- add new scaler - *Implemented new ML scaling approach using QuantileTransformer*
+- fix nan error - *Resolved NaN values in rating calculations*
+- change ratings to ml ratings - *Switched from simple scoring to ML-based rating system*
 ---
+<br>
 
-## 📊 Current Project State
+## Session 7 
+### Friday November 22nd
+<br>
 
-### **Architecture Overview**
-```
-FPLGaffer.py (Entry Point)
-├── config/ (Configuration & Data Fetching)
-├── models/ (ML Processing & Business Logic)
-├── modes/ (Application Logic)
-├── ai/ (AI Integration)
-└── utils/ (Utilities & Output)
-```
+**Summary:** Merge completion and documentation updates to reflect the new restructured project organization and improve user guidance. 
 
-### **Key Technologies**
-- **ML Framework**: scikit-learn (QuantileTransformer)
-- **AI Integration**: OpenAI client with Groq API
-- **Data Processing**: pandas, numpy
-- **Code Quality**: Black formatter, Flake8 linter
-- **Output**: tabulate for formatted tables
+**Git Branch:** main <br>
+**Git commits:** <br>
+cdeeaa5, 76f4b68, 7346d25 
 
-### **Current Features**
-1. **Transfer Mode**: ML-based player replacement suggestions
-2. **Wildcard Mode**: AI-powered optimal squad building
-3. **Dual AI API**: Free/paid tier fallback system
-4. **ML Rating System**: Statistical player performance normalization
-5. **Comprehensive Output**: Terminal + file reporting
-
+**Session git history:** 
+- update readme.md - *Updated documentation with new project structure*
+- update readme.md - *Further readme improvements and clarifications*
+- Merge branch 'restructure' into main - *Completed project restructuring merge*
 ---
+<br>
 
-## 🎯 Where You Left Off
+## Session 6 
+### Friday November 21st
+<br>
 
-### **Last Session Focus: Documentation & Professionalization**
-**Completed:**
-- ✅ **Comprehensive docstrings** across all functions
-- ✅ **Development guidelines** (AGENTS.md)
-- ✅ **Architecture reference** (PROJECT_FLOW.md)
-- ✅ **Code quality tools** (Black/Flake8)
+**Summary:** Configuration improvements including increasing maximum transfer players to 15 and adding AI model selection capabilities for enhanced user control. 
 
-### **Current Technical State**
-- **ML Rating System**: Fully implemented with QuantileTransformer
-- **AI Integration**: Robust dual-API system with error handling
-- **Code Quality**: Professional tooling and comprehensive documentation
-- **Project Structure**: Clean modular architecture
+**Git Branch:** main <br>
+**Git commits:** <br>
+1534679, 4bf2d74 
 
-### **Potential Next Steps**
-Based on development trajectory, consider:
-
-1. **Testing Framework**: No tests detected - could add pytest
-2. **Performance Optimization**: ML calculations could be cached
-3. **Additional Modes**: New analysis modes (historical performance, fixture analysis)
-4. **Enhanced AI**: More sophisticated prompt engineering
-5. **Data Visualization**: Add charts/graphs for player analysis
-
+**Session git history:** 
+- update readme.md and AI_MODEL selection - *Added AI model configuration options*
+- change max transfer players to 15 - *Increased transfer analysis limit to full team*
 ---
+<br>
 
-## 🔍 Recent File Changes (Last 5 Commits)
+## Session 5 
+### Sunday October 31st
+<br>
 
-### **Most Modified Files:**
-1. **models/ratings.py** - Core ML rating system (5 changes)
-2. **config/constants.py** - Weights and configuration (4 changes)
-3. **models/sort.py** - Player sorting logic (3 changes)
-4. **FPLGaffer.py** - Main entry point (3 changes)
-5. **modes/transfer_mode.py** - Transfer logic (3 changes)
+**Summary:** File structure reorganization to improve project modularity and maintainability, likely preparing for future development scaling. 
 
-### **Recently Added Files:**
-- `AGENTS.md` - Development guidelines
-- `PROJECT_FLOW.md` - Architecture reference
-- `.flake8` - Linting configuration
-- `pyproject.toml` - Black formatter configuration
+**Git Branch:** main <br>
+**Git commits:** <br>
+800825e 
 
+**Session git history:** 
+- update file structure - *Reorganized project files for better modularity*
 ---
+<br>
 
-## 💡 Development Patterns Observed
+## Session 4 
+### Wednesday October 30th
+<br>
 
-### **Work Style:**
-- **Focused sessions**: Major features implemented in concentrated bursts
-- **Iterative refinement**: Multiple commits per feature with improvements
-- **Quality focus**: Recent emphasis on code quality and documentation
-- **Architectural thinking**: Willingness to restructure for better organization
+**Summary:** AI response improvements to enhance the quality and accuracy of transfer and wildcard recommendations provided to users. 
 
-### **Technical Debt Management:**
-- **Proactive refactoring**: Complete rating system rewrite
-- **Tooling adoption**: Added professional development tools
-- **Documentation investment**: Comprehensive inline and external documentation
+**Git Branch:** main <br>
+**Git commits:** <br>
+4d8935e 
 
+**Session git history:** 
+- impprove AI response - *Enhanced AI response quality and formatting*
 ---
+<br>
 
-## 🚀 Next Session Suggestions
+## Session 3 
+### Wednesday October 15th
+<br>
 
-### **Immediate Options:**
-1. **Add Testing Framework** - No tests currently exist
-2. **Performance Analysis** - Profile ML rating calculations
-3. **Enhanced AI Prompts** - Improve AI response quality
-4. **Data Visualization** - Add charts for player analysis
-5. **New Analysis Modes** - Fixture difficulty, historical trends
+**Summary:** API key management improvements with dual free/paid Groq API key support and documentation updates to reflect new transfer and wildcard mode capabilities. 
 
-### **Quick Wins:**
-- Add basic unit tests for core functions
-- Implement caching for FPL API calls
-- Add configuration validation
-- Enhance error messages for better UX
+**Git Branch:** main <br>
+**Git commits:** <br>
+8d65b3f, cc6e735, ad14c84, 68ee351 
 
+**Session git history:** 
+- add date to outputs - *Added timestamp functionality to report generation*
+- update readme.md for new transfer/wildcard modes - *Updated documentation for new features*
+- remove unwanted files - *Cleaned up unnecessary project files*
+- update to use free & paid Groq API keys - *Implemented dual API key system with fallback*
 ---
+<br>
 
-## 📝 Session Notes Template
+## Session 2 
+### Monday October 13th
+<br>
 
-*Use this template for future sessions:*
+**Summary:** Major feature development session implementing transfer and wildcard modes, AI integration with error handling, and comprehensive documentation updates. 
 
-```
-## Session Date: [Date]
-### Goals:
-- [ ] Goal 1
-- [ ] Goal 2
+**Git Branch:** main <br>
+**Git commits:** <br>
+059444d, 9840692, 1ee9476, 00d8fd1, 3b3c569 
 
-### Completed:
-- ✅ Completed task 1
-- ✅ Completed task 2
-
-### Issues Encountered:
-- Issue: Description
-- Solution: How resolved
-
-### Next Session:
-- [ ] Follow-up task 1
-- [ ] Follow-up task 2
-
-### Files Modified:
-- file.py - Description of changes
-```
-
+**Session git history:** 
+- update readme.md - *Final documentation updates for new features*
+- update readme.md - *Updated readme with new mode information*
+- update wildcard ai prompt - *Refined AI prompt for wildcard recommendations*
+- Add AI error handling - *Implemented robust error handling for AI API calls*
+- Add transfer & wildcard modes - *Created core transfer and wildcard analysis modes*
 ---
+<br>
 
-*This log is automatically generated from git history. Update it after major development sessions to maintain continuity.*
+## Session 1 
+### Sunday October 12th
+<br>
+
+**Summary:** Initial project setup with basic FPLGaffer implementation, TEAM_ID validation, and project configuration including readme and gitignore setup. 
+
+**Git Branch:** main <br>
+**Git commits:** <br>
+ab05ded, 49ebf4e, f2db513, d8dfe82 
+
+**Session git history:** 
+- update .gitignore - *Added appropriate gitignore rules for Python project*
+- add TEAM_ID validation - *Implemented team ID validation for security*
+- rename readme.md file - *Corrected readme file naming*
+- initial FPLGaffer commit - *Created initial project structure and basic functionality*
+---
+<br>
