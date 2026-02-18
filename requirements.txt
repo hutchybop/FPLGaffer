@@ -10,5 +10,7 @@ tabulate
 pandas
 numpy
 scikit-learn
+flask
 black
 flake8
+flask

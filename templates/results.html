@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>{{ 'Transfer' if result.mode == 'transfer' else 'Wildcard' }} Analysis Results</h2>
+    <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">Back to Home</a>
+</div>
+
+<div class="alert alert-info">
+    <strong>Gameweek:</strong> {{ result.gw }} | 
+    <strong>Bank:</strong> £{{ result.bank }}m | 
+    <strong>Report:</strong> <a href="{{ url_for('view_report', filename=result.filename) }}" class="alert-link">{{ result.filename }}</a>
+</div>
+
+<!-- AI Recommendations -->
+<div class="card mb-4">
+    <div class="card-header bg-success text-white">
+        <h4 class="mb-0">🤖 AI Recommendations</h4>
+    </div>
+    <div class="card-body">
+        <pre class="ai-response">{{ result.ai_response }}</pre>
+    </div>
+</div>
+
+{% if result.mode == 'transfer' %}
+<!-- Current Team (Transfer Mode) -->
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">👥 Current Team (sorted by rating)</h4>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Name</th>
+                        <th>Team</th>
+                        <th>Rating</th>
+                        <th>Pos</th>
+                        <th>Cost</th>
+                        <th>Form</th>
+                        <th>Exp Pts</th>
+                        <th>Pts</th>
+                        <th>Mins</th>
+                        <th>Pts/£m</th>
+                        <th>Owned</th>
+                        <th>Chance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for player in result.sorted_current %}
+                    <tr>
+                        <td>{{ player.web_name }}</td>
+                        <td>{{ player.team_name }}</td>
+                        <td><span class="badge bg-{{ 'success' if player.rating >= 80 else 'warning' if player.rating >= 50 else 'danger' }}">{{ player.rating }}</span></td>
+                        <td>{{ player.pos }}</td>
+                        <td>£{{ player['now_cost(m)'] }}m</td>
+                        <td>{{ player.form }}</td>
+                        <td>{{ player.ep_next }}</td>
+                        <td>{{ player.total_points }}</td>
+                        <td>{{ player.minutes }}</td>
+                        <td>{{ '%.2f'|format((player.total_points / player['now_cost(m)'])|float) if player['now_cost(m)'] > 0 else 0 }}</td>
+                        <td>{{ player.selected_by_percent }}%</td>
+                        <td>{{ player.chance_of_playing_next_round }}%</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<!-- Top Players by Position (Wildcard Mode) -->
+{% for position, title in [('GKP', 'Top Goalkeepers'), ('DEF', 'Top Defenders'), ('MID', 'Top Midfielders'), ('FWD', 'Top Forwards')] %}
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">👥 {{ title }}</h4>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Name</th>
+                        <th>Team</th>
+                        <th>Rating</th>
+                        <th>Cost</th>
+                        <th>Form</th>
+                        <th>Exp Pts</th>
+                        <th>Pts</th>
+                        <th>Mins</th>
+                        <th>Pts/£m</th>
+                        <th>Owned</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for player in result.sorted_players[position][:10] %}
+                    <tr>
+                        <td>{{ player.web_name }}</td>
+                        <td>{{ player.team_name }}</td>
+                        <td><span class="badge bg-{{ 'success' if player.rating >= 80 else 'warning' if player.rating >= 50 else 'danger' }}">{{ player.rating }}</span></td>
+                        <td>£{{ player['now_cost(m)'] }}m</td>
+                        <td>{{ player.form }}</td>
+                        <td>{{ player.ep_next }}</td>
+                        <td>{{ player.total_points }}</td>
+                        <td>{{ player.minutes }}</td>
+                        <td>{{ '%.2f'|format((player.total_points / player['now_cost(m)'])|float) if player['now_cost(m)'] > 0 else 0 }}</td>
+                        <td>{{ player.selected_by_percent }}%</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+
+<!-- Report Link -->
+<div class="text-center mt-4">
+    <a href="{{ url_for('view_report', filename=result.filename) }}" class="btn btn-lg btn-outline-primary">View Full Report</a>
+</div>
+{% endblock %}

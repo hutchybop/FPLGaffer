@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">🚀 Run New Analysis</h4>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('analyze') }}" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Mode</label>
+                        <select name="mode" class="form-select" id="modeSelect" onchange="toggleReplacements()">
+                            <option value="transfer">Transfer Mode (Weekly)</option>
+                            <option value="wildcard">Wildcard Mode (Long Term)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3" id="replacementsField">
+                        <label class="form-label">Number of players to show replacements for (0-15)</label>
+                        <input type="number" name="num_replacements" class="form-control" value="4" min="0" max="15">
+                    </div>
+                    <div class="mb-3" id="teamCostField" style="display: none;">
+                        <label class="form-label">Total Team Value (0-100)</label>
+                        <input type="number" name="team_cost" class="form-control" value="100" min="0" max="100">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Team ID (Optional)</label>
+                        <input type="text" name="team_id" class="form-control" placeholder="Leave empty to use .env">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                        Run Analysis
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-secondary text-white">
+                <h4 class="mb-0">📋 Report History</h4>
+            </div>
+            <div class="card-body">
+                {% if reports %}
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover">
+                        <thead>
+                            <tr>
+                                <th>Report Name</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for report in reports %}
+                            <tr>
+                                <td>
+                                    <a href="{{ url_for('view_report', filename=report.filename) }}" class="text-info text-decoration-none">
+                                        {{ report.name }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('view_report', filename=report.filename) }}" class="btn btn-sm btn-outline-info">View</a>
+                                    <a href="{{ url_for('delete_report', filename=report.filename) }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this report?')">Delete</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted">No reports found. Run an analysis to create your first report.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleReplacements() {
+    var mode = document.getElementById('modeSelect').value;
+    var replacementsField = document.getElementById('replacementsField');
+    var teamCostField = document.getElementById('teamCostField');
+    if (mode === 'wildcard') {
+        replacementsField.style.display = 'none';
+        teamCostField.style.display = 'block';
+    } else {
+        replacementsField.style.display = 'block';
+        teamCostField.style.display = 'none';
+    }
+}
+toggleReplacements();
+</script>
+{% endblock %}
