@@ -15,7 +15,6 @@ def find_replacements(player, bank, sorted_players, current_team, num_replacemen
     available_budget = (bank) + player_cost
     min_price = 4.0
     max_price = available_budget
-    # position = POS_MAP.get(player.get("element_type"))
     position = player.get("pos", "")
     # Filter candidates by budget, availability, and not in current team
     current_team_ids = {p["id"] for p in current_team}

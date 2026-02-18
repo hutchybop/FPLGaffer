@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.preprocessing import QuantileTransformer
 
 
-def compute_ml_ratings(players, attribute_weights):
+def compute_ml_ratings(players, attribute_weights, mode="wildcard"):
     """
     Compute player ratings using ML scaling + weighted sum.
     Args:
@@ -73,7 +73,8 @@ def compute_ml_ratings(players, attribute_weights):
     )
 
     df["team_fix_dif"] = df["team_fix_dif"].apply(safe_float)
-    fix_factor = 1.0 + (2.5 - df["team_fix_dif"]) * 0.05
+    fix_multiplier = 0.08 if mode == "transfer" else 0.05
+    fix_factor = 1.0 + (2.5 - df["team_fix_dif"]) * fix_multiplier
     strength = df["team_strength"].apply(safe_float)
 
     # Convert FPL team strength numbers (1–5) to 100 baseline

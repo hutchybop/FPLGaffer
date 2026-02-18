@@ -75,9 +75,9 @@ def transfer(bank, sorted_players, sorted_current):
         transfers_full = {
             player.get("web_name", ""): {
                 "current": player,  # full current player dict
-                "candidates": replacements,  # list of full candidate dicts
+                "candidates": candidates,  # list of full candidate dicts
             }
-            for player, replacements in zip(
+            for player, candidates in zip(
                 sorted_current[:num_of_replacements],
                 player_replacement_options.values(),
             )

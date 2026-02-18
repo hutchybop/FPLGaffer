@@ -11,7 +11,6 @@ from utils import file_handlers, print_output
 from models import ratings, sort
 from modes import transfer_mode, wildcard_mode
 
-
 # Main script
 if __name__ == "__main__":
 
@@ -45,7 +44,8 @@ if __name__ == "__main__":
     sys.stdout = file_handlers.Tee(sys.stdout, f)
 
     # Calculate player ratings and add to player dicts
-    players = ratings.compute_ml_ratings(players, weights)
+    mode_name = "transfer" if mode == "t" else "wildcard"
+    players = ratings.compute_ml_ratings(players, weights, mode_name)
 
     # Sort rated players into a dic of GKP, DEF, MID, FWD
     sorted_players = sort.sort_players(players)

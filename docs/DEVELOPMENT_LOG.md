@@ -4,6 +4,22 @@ This document tracks the development history of the FPLGaffer project through di
 
 ---
 
+## Session 13 
+### Saturday November 29th
+<br>
+
+**Summary:** Documentation consolidation session focused on removing redundant PROJECT_FLOW.md file and updating development log with proper session-based formatting for improved project documentation structure. 
+
+**Git Branch:** ml_scaling <br>
+**Git commits:** <br>
+7d92a03 
+
+**Session git history:** 
+- update docs - *Removed redundant PROJECT_FLOW.md and updated development log formatting*
+
+---
+<br>
+
 ## Session 12 
 ### Saturday November 29th
 <br>

@@ -13,9 +13,9 @@ def print_players(players):
     table_data = []
     for player in players:
         # Calculate value for money (points per million)
-        cost = player.get("now_cost", 0)
+        cost = player.get("now_cost(m)", 0)
         total_points = player.get("total_points", 0)
-        ppm = round((total_points / cost * 10), 2) if cost > 0 else 0.0
+        ppm = round((total_points / cost), 2) if cost > 0 else 0.0
         # Add data for player
         table_data.append(
             [
@@ -48,7 +48,7 @@ def print_players(players):
         "Exp Pts",
         "Pts",
         "Mins",
-        "Pts/m",
+        "Pts/£m",
         "Owned",
         "Chance of PLaying",
         "News",

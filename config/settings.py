@@ -114,7 +114,7 @@ def team_stats(bootstrap_data, fixture_data, num_fix=3):
             ) and not fixture["finished"]:
                 team_fixtures.append(fixture)
         # Sort by kickoff time and take next N fixtures
-        team_fixtures.sort(key=lambda x: x["kickoff_time"])
+        team_fixtures.sort(key=lambda x: x["kickoff_time"] or "")
         next_fixtures = team_fixtures[:num_fix]
         # Calculate average difficulty
         difficulties = []
@@ -195,6 +195,10 @@ def format_all_players(bootstrap_data):
             "penalties_saved": el.get("penalties_saved", ""),
             "goals_conceded": el.get("goals_conceded", ""),
             "expected_goals_conceded": el.get("expected_goals_conceded", ""),
+            "expected_goal_involvements_per_90": el.get(
+                "expected_goal_involvements_per_90", ""
+            ),
+            "clean_sheets_per_90": el.get("clean_sheets_per_90", ""),
             "selected_by_percent": el.get("selected_by_percent", ""),
         }
         players.append(player)
