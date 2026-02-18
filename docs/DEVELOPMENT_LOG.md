@@ -4,6 +4,22 @@ This document tracks the development history of the FPLGaffer project through di
 
 ---
 
+## Session 14 
+### Wednesday February 18th
+<br>
+
+**Summary:** Bug fix session addressing minor issues including fixing fixture difficulty multiplier logic to use mode-specific values, correcting cost and points-per-million calculations, adding missing player attribute fields, and resolving variable naming issues in transfer mode.
+
+**Git Branch:** main <br>
+**Git commits:** <br>
+0c99280 
+
+**Session git history:** 
+- update minor bugs - *Fixed fixture difficulty multiplier, cost calculations, player attributes, and variable naming*
+
+---
+<br>
+
 ## Session 13 
 ### Saturday November 29th
 <br>
