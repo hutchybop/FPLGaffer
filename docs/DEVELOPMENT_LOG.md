@@ -4,6 +4,22 @@ This document tracks the development history of the FPLGaffer project through di
 
 ---
 
+## Session 15 
+### Wednesday February 18th
+<br>
+
+**Summary:** Major feature implementation adding a web-based GUI interface using Flask, including base template, custom styling, and multiple page views for the application.
+
+**Git Branch:** gui <br>
+**Git commits:** <br>
+3c741df 
+
+**Session git history:** 
+- add gui - *Added web-based GUI interface with Flask, including base template, styles, and multiple page views*
+
+---
+<br>
+
 ## Session 14 
 ### Wednesday February 18th
 <br>

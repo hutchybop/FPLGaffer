@@ -32,14 +32,15 @@ def ai_fpl_helper(prompt, SYSTEM_PROMPT, client_free, client_paid, API_KEY):
                 messages=messages,
                 temperature=0.3,
                 max_tokens=600,
+                extra_body={"include_reasoning": False},
             )
         elif client_paid:
-            print("💳 Using paid key (no free key configured)")
             resp = client_paid.chat.completions.create(
                 model=constants.AI_MODEL,
                 messages=messages,
                 temperature=0.3,
                 max_tokens=600,
+                extra_body={"include_reasoning": False},
             )
         else:
             return "AI Error: No available client."
@@ -61,6 +62,7 @@ def ai_fpl_helper(prompt, SYSTEM_PROMPT, client_free, client_paid, API_KEY):
                 messages=messages,
                 temperature=0.3,
                 max_tokens=600,
+                extra_body={"include_reasoning": False},
             )
         else:
             return f"AI Error: {e}\nDo you have VPN on..."

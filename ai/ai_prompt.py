@@ -66,12 +66,16 @@ def ai_wildcard_prompt(total_team_cost):
                 • Do not include any duplicate players — every player in the 15-man
                   squad must be unique and selected only once
             - Carry out post selection total cost validation
-                - Add up the exact value of each player and confirm the total is
-                  equal to or below {total_team_cost}
+                - **CRITICAL**: Add up the exact value of each of the 15 players and
+                  confirm the total is equal to or below {total_team_cost}m
+                - Double-check your math - an incorrect total will result in an
+                  invalid squad selection
             - Before outputting your selection, validate all constraints:
                 - Total cost ≤ £{total_team_cost}m (do NOT exceed)
                 - No more than 3 players from any single team
                 - Exact position counts (2 GKP, 5 DEF, 5 MID, 3 FWD)
+                - **CRITICAL**: Sum ALL 15 player costs accurately - this total will be
+                  verified and must be mathematically correct
             - If any constraint is violated, replace players to satisfy the rules
               **before producing output**.
 
@@ -112,16 +116,6 @@ def ai_wildcard_prompt(total_team_cost):
             LIV - 2
             ARS - 3
             MCI - 3
-            CHE - 2
-            NEW - 1
-            BOU - 1
-            SHU - 1
-            WHU - 1
-            Team Total Cost:
-            Add the cost of each player together (must not exceed 100)
-            Example:
-            5.8 + 4.0 + 6.5 + 5.5 + 5.0 + 5.0 + 4.1 + 12.5 + 7.0 + 6.0 + 7.5 + 6.0 +
-            14.0 + 6.5 + 4.5 = 99.6
 
         Example output:
             Total cost: £99.6m
@@ -153,8 +147,6 @@ def ai_wildcard_prompt(total_team_cost):
             WHU - 1
             BOU - 1
             SHU - 1
-            Team Cost:
-            5.8 + 4.0 + 6.5 + 5.5 + 5.0 + 5.0 + 4.1 + 12.5 + 7.0 + 6.0 + 7.5 + 6.0 +
-            14.0 + 6.5 + 4.5 = 99.6
+            Total Cost: £99.6m
     """
     return wildcard_prompt
