@@ -4,6 +4,22 @@ This document tracks the development history of the FPLGaffer project through di
 
 ---
 
+## Session 16 
+### Thursday February 19th
+<br>
+
+**Summary:** AI prompt and model update session focusing on improving AI recommendations through refined prompt engineering and model configuration updates.
+
+**Git Branch:** prompt <br>
+**Git commits:** <br>
+261e79a 
+
+**Session git history:** 
+- Update ai prompts and model - *Refined AI prompts and updated model configuration for better recommendations*
+
+---
+<br>
+
 ## Session 15 
 ### Wednesday February 18th
 <br>
