@@ -1,0 +1,11 @@
+services:
+  fplgaffer:
+    image: ghcr.io/hutchybop/fplgaffer:latest
+    container_name: fplgaffer
+    restart: unless-stopped
+    # ports:
+    #   - "3006:3006"
+    env_file:
+      - .env
+    volumes:
+      - ./reports:/app/reports
