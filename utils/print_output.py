@@ -23,13 +23,13 @@ def print_players(players):
                 player.get("team_name", ""),
                 player.get("rating", ""),
                 player.get("pos", ""),
-                f"£{player.get("now_cost(m)", "")}m",
+                f'£{player.get("now_cost(m)", "")}m',
                 player.get("form", ""),
                 player.get("ep_next", ""),
                 player.get("total_points", ""),
                 player.get("minutes", ""),
                 ppm,
-                f"{player.get("selected_by_percent", "")}%",
+                f'{player.get("selected_by_percent", "")}%',
                 (
                     f"{player.get('chance_of_playing_next_round', '')}%"
                     if player.get("chance_of_playing_next_round") is not None
@@ -76,7 +76,7 @@ def print_replacement_impact(player, candidates):
             cost_str = "Same price"
         print(
             f"{i}. {candidate['web_name']} - {cost_str} "
-            f"(Rating: {candidate["rating"]:.1f})"
+            f"(Rating: {candidate['rating']:.1f})"
         )
 
 
