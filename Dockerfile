@@ -27,4 +27,4 @@ EXPOSE 3006
 
 USER appuser
 
-CMD ["gunicorn", "--bind", "0.0.0.0:3006", "--workers", "2", "--threads", "4", "app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:3006", "--workers", "2", "--threads", "4", "web:app"]

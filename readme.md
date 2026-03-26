@@ -114,7 +114,7 @@ Use their respective API keys for `GROQ_API_KEY_FREE` and `GROQ_API_KEY_PAID`.
 ## 🚀 Run the Script
 Once your `.env` is configured:
 ```bash
-python3 FPLGaffer.py
+python3 cli.py
 ```
 
 You’ll be prompted to:

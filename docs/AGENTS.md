@@ -16,7 +16,7 @@
 - **Docstrings**: Use triple quotes with Args/Returns sections for functions
 
 ## Project Structure
-- Main entry: `FPLGaffer.py`
+- Main entry: `cli.py` (CLI) and `web.py` (Flask web app)
 - Config: `config/` (constants, settings, environment validation)
 - Models: `models/` (ratings, replacements, sorting algorithms)
 - Utils: `utils/` (file handlers, date formatting, output formatting)

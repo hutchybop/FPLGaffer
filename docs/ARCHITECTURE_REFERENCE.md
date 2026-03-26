@@ -13,7 +13,7 @@ The application fetches real-time data from the official FPL API, applies machin
 
 ```mermaid
 graph TD
-    A[FPLGaffer.py] --> B[Environment Setup]
+    A[cli.py] --> B[Environment Setup]
     B --> C[Data Fetching]
     C --> D[Player Rating]
     D --> E[Mode Selection]
@@ -50,7 +50,8 @@ graph TD
 ## File/Module Inventory
 
 ### Entry Point
-- **FPLGaffer.py**: Main application orchestrator that coordinates all system components and handles user interaction
+- **cli.py**: CLI application orchestrator that coordinates all system components and handles user interaction
+- **web.py**: Flask web application entry point
 
 ### Configuration Layer (`config/`)
 - **constants.py**: Global constants including API endpoints, position mappings, AI configuration, and rating weights for different modes
@@ -78,7 +79,7 @@ graph TD
 
 ```mermaid
 graph LR
-    A[FPLGaffer.py] --> B[config/settings.py]
+    A[cli.py] --> B[config/settings.py]
     A --> C[ai/ai_prompt.py]
     A --> D[ai/ai_advisor.py]
     A --> E[utils/file_handlers.py]
@@ -116,7 +117,8 @@ graph LR
 - **Internal Dependencies**: Clear hierarchical structure with minimal circular dependencies
 
 ### Entry Points
-- **Primary**: `FPLGaffer.py` - Main application entry point
+- **Primary CLI**: `cli.py` - Main CLI entry point
+- **Primary Web**: `web.py` - Flask web entry point
 - **Configuration**: Environment variables loaded via `.env` file
 
 ## Data Flow
@@ -183,7 +185,7 @@ All Data → print_output.print_*() → Formatted Tables → file_handlers.Tee()
 
 ### Adding New Operation Modes
 1. **Create Mode Module**: Follow pattern of `modes/transfer_mode.py` and `modes/wildcard_mode.py`
-2. **Update Main Script**: Add mode selection logic in `FPLGaffer.py:28-38`
+2. **Update Main Script**: Add mode selection logic in `cli.py:28-38`
 3. **Add AI Prompts**: Create system prompt in `ai/ai_prompt.py` following existing patterns
 
 ### Extending AI Integration
