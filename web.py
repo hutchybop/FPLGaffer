@@ -162,8 +162,6 @@ def run_analysis(mode, team_id=None, num_replacements=4, team_cost=100):
         "mode": mode,
         "gw": gw,
         "bank": bank,
-        "sorted_current": sorted_current,
-        "sorted_players": sorted_players,
         "ai_response": (
             ai_response
             if API_KEY
