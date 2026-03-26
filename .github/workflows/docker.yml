@@ -58,11 +58,12 @@ jobs:
 
       - name: Make package public
         if: github.event_name != 'pull_request'
+        continue-on-error: true
         run: |
           gh api \
             --method PATCH \
             -H "Accept: application/vnd.github+json" \
-            /user/packages/container/${{ github.repository_owner }}/fplgaffer \
+            /user/packages/container/fplgaffer \
             -f visibility=public
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

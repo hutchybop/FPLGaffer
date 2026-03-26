@@ -1,0 +1,165 @@
+﻿2026-03-26T15:01:42.3153822Z ##[group]Run docker/metadata-action@v5
+2026-03-26T15:01:42.3154105Z with:
+2026-03-26T15:01:42.3154296Z   images: ghcr.io/hutchybop/FPLGaffer
+2026-03-26T15:01:42.3155368Z   tags: type=ref,event=branch
+type=ref,event=pr
+type=sha,prefix=sha-
+type=semver,pattern={{version}}
+type=semver,pattern={{major}}.{{minor}}
+type=semver,pattern={{major}}
+type=raw,value=latest,enable={{is_default_branch}}
+
+2026-03-26T15:01:42.3156196Z   context: workflow
+2026-03-26T15:01:42.3156727Z   github-token: ***
+2026-03-26T15:01:42.3156908Z env:
+2026-03-26T15:01:42.3157072Z   REGISTRY: ghcr.io
+2026-03-26T15:01:42.3157262Z   IMAGE_NAME: hutchybop/FPLGaffer
+2026-03-26T15:01:42.3157513Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+2026-03-26T15:01:42.3157758Z ##[endgroup]
+2026-03-26T15:01:42.6905371Z (node:2850) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-03-26T15:01:42.6906134Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-03-26T15:01:43.0495502Z ##[group]Context info
+2026-03-26T15:01:43.0496030Z eventName: push
+2026-03-26T15:01:43.0496931Z sha: 9ee7067699cc987f67d3b3b07e6642f7bc27c835
+2026-03-26T15:01:43.0497409Z ref: refs/heads/main
+2026-03-26T15:01:43.0497762Z workflow: Build and Push to GHCR
+2026-03-26T15:01:43.0498278Z action: meta
+2026-03-26T15:01:43.0498750Z actor: hutchybop
+2026-03-26T15:01:43.0499127Z runNumber: 2
+2026-03-26T15:01:43.0501171Z runId: 23601435579
+2026-03-26T15:01:43.0501836Z commitDate: Thu Mar 26 2026 15:01:16 GMT+0000 (Coordinated Universal Time)
+2026-03-26T15:01:43.0502804Z ##[endgroup]
+2026-03-26T15:01:43.0506455Z ##[group]Processing images input
+2026-03-26T15:01:43.0506935Z name=ghcr.io/hutchybop/FPLGaffer,enable=true
+2026-03-26T15:01:43.0507786Z ##[endgroup]
+2026-03-26T15:01:43.0535757Z ##[group]Processing tags input
+2026-03-26T15:01:43.0536942Z type=semver,pattern={{version}},value=,match=,enable=true,priority=900
+2026-03-26T15:01:43.0539159Z type=semver,pattern={{major}}.{{minor}},value=,match=,enable=true,priority=900
+2026-03-26T15:01:43.0540009Z type=semver,pattern={{major}},value=,match=,enable=true,priority=900
+2026-03-26T15:01:43.0540666Z type=ref,event=branch,enable=true,priority=600
+2026-03-26T15:01:43.0541207Z type=ref,event=pr,prefix=pr-,enable=true,priority=600
+2026-03-26T15:01:43.0541814Z type=raw,value=latest,enable={{is_default_branch}},priority=200
+2026-03-26T15:01:43.0542415Z type=sha,prefix=sha-,format=short,enable=true,priority=100
+2026-03-26T15:01:43.0543323Z ##[endgroup]
+2026-03-26T15:01:43.0543917Z ##[group]Processing flavor input
+2026-03-26T15:01:43.0544822Z latest=auto
+2026-03-26T15:01:43.0545765Z prefix=
+2026-03-26T15:01:43.0546415Z prefixLatest=false
+2026-03-26T15:01:43.0547033Z suffix=
+2026-03-26T15:01:43.0547613Z suffixLatest=false
+2026-03-26T15:01:43.0548370Z ##[endgroup]
+2026-03-26T15:01:43.0653797Z ##[group]Docker image version
+2026-03-26T15:01:43.0654517Z main
+2026-03-26T15:01:43.0655630Z ##[endgroup]
+2026-03-26T15:01:43.0657767Z ##[group]Docker tags
+2026-03-26T15:01:43.0662115Z ghcr.io/hutchybop/fplgaffer:main
+2026-03-26T15:01:43.0662613Z ghcr.io/hutchybop/fplgaffer:latest
+2026-03-26T15:01:43.0663077Z ghcr.io/hutchybop/fplgaffer:sha-9ee7067
+2026-03-26T15:01:43.0663798Z ##[endgroup]
+2026-03-26T15:01:43.0778966Z ##[group]Docker labels
+2026-03-26T15:01:43.0779521Z org.opencontainers.image.created=2026-03-26T15:01:43.053Z
+2026-03-26T15:01:43.0780673Z org.opencontainers.image.description=A Fantasy Premier League helper to rate players and suggest transfers (AI help optional)
+2026-03-26T15:01:43.0781781Z org.opencontainers.image.licenses=
+2026-03-26T15:01:43.0782492Z org.opencontainers.image.revision=9ee7067699cc987f67d3b3b07e6642f7bc27c835
+2026-03-26T15:01:43.0783449Z org.opencontainers.image.source=https://github.com/hutchybop/FPLGaffer
+2026-03-26T15:01:43.0784217Z org.opencontainers.image.title=FPLGaffer
+2026-03-26T15:01:43.0785119Z org.opencontainers.image.url=https://github.com/hutchybop/FPLGaffer
+2026-03-26T15:01:43.0785852Z org.opencontainers.image.version=main
+2026-03-26T15:01:43.0786986Z ##[endgroup]
+2026-03-26T15:01:43.0787538Z ##[group]Annotations
+2026-03-26T15:01:43.0788091Z manifest:org.opencontainers.image.created=2026-03-26T15:01:43.053Z
+2026-03-26T15:01:43.0789376Z manifest:org.opencontainers.image.description=A Fantasy Premier League helper to rate players and suggest transfers (AI help optional)
+2026-03-26T15:01:43.0790590Z manifest:org.opencontainers.image.licenses=
+2026-03-26T15:01:43.0791672Z manifest:org.opencontainers.image.revision=9ee7067699cc987f67d3b3b07e6642f7bc27c835
+2026-03-26T15:01:43.0792715Z manifest:org.opencontainers.image.source=https://github.com/hutchybop/FPLGaffer
+2026-03-26T15:01:43.0793528Z manifest:org.opencontainers.image.title=FPLGaffer
+2026-03-26T15:01:43.0794343Z manifest:org.opencontainers.image.url=https://github.com/hutchybop/FPLGaffer
+2026-03-26T15:01:43.0795367Z manifest:org.opencontainers.image.version=main
+2026-03-26T15:01:43.0796346Z ##[endgroup]
+2026-03-26T15:01:43.0797094Z ##[group]JSON output
+2026-03-26T15:01:43.0797451Z {
+2026-03-26T15:01:43.0797764Z   "tags": [
+2026-03-26T15:01:43.0798098Z     "ghcr.io/hutchybop/fplgaffer:main",
+2026-03-26T15:01:43.0798622Z     "ghcr.io/hutchybop/fplgaffer:latest",
+2026-03-26T15:01:43.0799152Z     "ghcr.io/hutchybop/fplgaffer:sha-9ee7067"
+2026-03-26T15:01:43.0799801Z   ],
+2026-03-26T15:01:43.0800370Z   "tag-names": [
+2026-03-26T15:01:43.0800864Z     "main",
+2026-03-26T15:01:43.0801301Z     "latest",
+2026-03-26T15:01:43.0801951Z     "sha-9ee7067"
+2026-03-26T15:01:43.0802466Z   ],
+2026-03-26T15:01:43.0802875Z   "labels": {
+2026-03-26T15:01:43.0803682Z     "org.opencontainers.image.created": "2026-03-26T15:01:43.053Z",
+2026-03-26T15:01:43.0805256Z     "org.opencontainers.image.description": "A Fantasy Premier League helper to rate players and suggest transfers (AI help optional)",
+2026-03-26T15:01:43.0806585Z     "org.opencontainers.image.licenses": "",
+2026-03-26T15:01:43.0807719Z     "org.opencontainers.image.revision": "9ee7067699cc987f67d3b3b07e6642f7bc27c835",
+2026-03-26T15:01:43.0808846Z     "org.opencontainers.image.source": "https://github.com/hutchybop/FPLGaffer",
+2026-03-26T15:01:43.0809772Z     "org.opencontainers.image.title": "FPLGaffer",
+2026-03-26T15:01:43.0810600Z     "org.opencontainers.image.url": "https://github.com/hutchybop/FPLGaffer",
+2026-03-26T15:01:43.0811425Z     "org.opencontainers.image.version": "main"
+2026-03-26T15:01:43.0811924Z   },
+2026-03-26T15:01:43.0812492Z   "annotations": [
+2026-03-26T15:01:43.0813175Z     "manifest:org.opencontainers.image.created=2026-03-26T15:01:43.053Z",
+2026-03-26T15:01:43.0814566Z     "manifest:org.opencontainers.image.description=A Fantasy Premier League helper to rate players and suggest transfers (AI help optional)",
+2026-03-26T15:01:43.0816312Z     "manifest:org.opencontainers.image.licenses=",
+2026-03-26T15:01:43.0817227Z     "manifest:org.opencontainers.image.revision=9ee7067699cc987f67d3b3b07e6642f7bc27c835",
+2026-03-26T15:01:43.0818514Z     "manifest:org.opencontainers.image.source=https://github.com/hutchybop/FPLGaffer",
+2026-03-26T15:01:43.0819416Z     "manifest:org.opencontainers.image.title=FPLGaffer",
+2026-03-26T15:01:43.0820504Z     "manifest:org.opencontainers.image.url=https://github.com/hutchybop/FPLGaffer",
+2026-03-26T15:01:43.0821691Z     "manifest:org.opencontainers.image.version=main"
+2026-03-26T15:01:43.0822288Z   ]
+2026-03-26T15:01:43.0822834Z }
+2026-03-26T15:01:43.0823604Z ##[endgroup]
+2026-03-26T15:01:43.0824550Z ##[group]Bake file definition (tags)
+2026-03-26T15:01:43.0825317Z {
+2026-03-26T15:01:43.0825692Z   "target": {
+2026-03-26T15:01:43.0826338Z     "docker-metadata-action": {
+2026-03-26T15:01:43.0826892Z       "tags": [
+2026-03-26T15:01:43.0827416Z         "ghcr.io/hutchybop/fplgaffer:main",
+2026-03-26T15:01:43.0828436Z         "ghcr.io/hutchybop/fplgaffer:latest",
+2026-03-26T15:01:43.0829031Z         "ghcr.io/hutchybop/fplgaffer:sha-9ee7067"
+2026-03-26T15:01:43.0829624Z       ],
+2026-03-26T15:01:43.0830026Z       "args": {
+2026-03-26T15:01:43.0830650Z         "DOCKER_META_IMAGES": "ghcr.io/hutchybop/fplgaffer",
+2026-03-26T15:01:43.0831577Z         "DOCKER_META_VERSION": "main"
+2026-03-26T15:01:43.0832311Z       }
+2026-03-26T15:01:43.0832807Z     }
+2026-03-26T15:01:43.0833181Z   }
+2026-03-26T15:01:43.0833651Z }
+2026-03-26T15:01:43.0834458Z ##[endgroup]
+2026-03-26T15:01:43.0835439Z ##[group]Bake file definition (labels)
+2026-03-26T15:01:43.0836168Z {
+2026-03-26T15:01:43.0836619Z   "target": {
+2026-03-26T15:01:43.0837032Z     "docker-metadata-action": {
+2026-03-26T15:01:43.0838060Z       "labels": {
+2026-03-26T15:01:43.0838663Z         "org.opencontainers.image.created": "2026-03-26T15:01:43.053Z",
+2026-03-26T15:01:43.0840056Z         "org.opencontainers.image.description": "A Fantasy Premier League helper to rate players and suggest transfers (AI help optional)",
+2026-03-26T15:01:43.0841416Z         "org.opencontainers.image.licenses": "",
+2026-03-26T15:01:43.0842349Z         "org.opencontainers.image.revision": "9ee7067699cc987f67d3b3b07e6642f7bc27c835",
+2026-03-26T15:01:43.0843504Z         "org.opencontainers.image.source": "https://github.com/hutchybop/FPLGaffer",
+2026-03-26T15:01:43.0844945Z         "org.opencontainers.image.title": "FPLGaffer",
+2026-03-26T15:01:43.0845997Z         "org.opencontainers.image.url": "https://github.com/hutchybop/FPLGaffer",
+2026-03-26T15:01:43.0846906Z         "org.opencontainers.image.version": "main"
+2026-03-26T15:01:43.0847652Z       }
+2026-03-26T15:01:43.0848037Z     }
+2026-03-26T15:01:43.0848471Z   }
+2026-03-26T15:01:43.0872596Z }
+2026-03-26T15:01:43.0873338Z ##[endgroup]
+2026-03-26T15:01:43.0874058Z ##[group]Bake file definition (annotations)
+2026-03-26T15:01:43.0874530Z {
+2026-03-26T15:01:43.0874961Z   "target": {
+2026-03-26T15:01:43.0875351Z     "docker-metadata-action": {
+2026-03-26T15:01:43.0875797Z       "annotations": [
+2026-03-26T15:01:43.0876365Z         "manifest:org.opencontainers.image.created=2026-03-26T15:01:43.053Z",
+2026-03-26T15:01:43.0877626Z         "manifest:org.opencontainers.image.description=A Fantasy Premier League helper to rate players and suggest transfers (AI help optional)",
+2026-03-26T15:01:43.0878840Z         "manifest:org.opencontainers.image.licenses=",
+2026-03-26T15:01:43.0879410Z         "manifest:org.opencontainers.image.revision=9ee7067699cc987f67d3b3b07e6642f7bc27c835",
+2026-03-26T15:01:43.0880018Z         "manifest:org.opencontainers.image.source=https://github.com/hutchybop/FPLGaffer",
+2026-03-26T15:01:43.0880519Z         "manifest:org.opencontainers.image.title=FPLGaffer",
+2026-03-26T15:01:43.0880997Z         "manifest:org.opencontainers.image.url=https://github.com/hutchybop/FPLGaffer",
+2026-03-26T15:01:43.0881465Z         "manifest:org.opencontainers.image.version=main"
+2026-03-26T15:01:43.0881747Z       ]
+2026-03-26T15:01:43.0881906Z     }
+2026-03-26T15:01:43.0882054Z   }
+2026-03-26T15:01:43.0882205Z }
+2026-03-26T15:01:43.0882519Z ##[endgroup]

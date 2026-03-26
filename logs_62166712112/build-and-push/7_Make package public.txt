@@ -1,0 +1,48 @@
+﻿2026-03-26T15:02:23.1523353Z ##[group]Run gh api \
+2026-03-26T15:02:23.1523636Z [36;1mgh api \[0m
+2026-03-26T15:02:23.1523852Z [36;1m  --method PATCH \[0m
+2026-03-26T15:02:23.1524226Z [36;1m  -H "Accept: application/vnd.github+json" \[0m
+2026-03-26T15:02:23.1524619Z [36;1m  /user/packages/container/hutchybop/fplgaffer \[0m
+2026-03-26T15:02:23.1525241Z [36;1m  -f visibility=public[0m
+2026-03-26T15:02:23.1577019Z shell: /usr/bin/bash -e {0}
+2026-03-26T15:02:23.1577294Z env:
+2026-03-26T15:02:23.1577460Z   REGISTRY: ghcr.io
+2026-03-26T15:02:23.1577673Z   IMAGE_NAME: hutchybop/FPLGaffer
+2026-03-26T15:02:23.1577931Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+2026-03-26T15:02:23.1578199Z   DOCKER_METADATA_OUTPUT_VERSION: main
+2026-03-26T15:02:23.1578783Z   DOCKER_METADATA_OUTPUT_TAGS: ghcr.io/hutchybop/fplgaffer:main
+ghcr.io/hutchybop/fplgaffer:latest
+ghcr.io/hutchybop/fplgaffer:sha-9ee7067
+2026-03-26T15:02:23.1579436Z   DOCKER_METADATA_OUTPUT_TAG_NAMES: main
+latest
+sha-9ee7067
+2026-03-26T15:02:23.1581557Z   DOCKER_METADATA_OUTPUT_LABELS: org.opencontainers.image.created=2026-03-26T15:01:43.053Z
+org.opencontainers.image.description=A Fantasy Premier League helper to rate players and suggest transfers (AI help optional)
+org.opencontainers.image.licenses=
+org.opencontainers.image.revision=9ee7067699cc987f67d3b3b07e6642f7bc27c835
+org.opencontainers.image.source=https://github.com/hutchybop/FPLGaffer
+org.opencontainers.image.title=FPLGaffer
+org.opencontainers.image.url=https://github.com/hutchybop/FPLGaffer
+org.opencontainers.image.version=main
+2026-03-26T15:02:23.1586189Z   DOCKER_METADATA_OUTPUT_ANNOTATIONS: manifest:org.opencontainers.image.created=2026-03-26T15:01:43.053Z
+manifest:org.opencontainers.image.description=A Fantasy Premier League helper to rate players and suggest transfers (AI help optional)
+manifest:org.opencontainers.image.licenses=
+manifest:org.opencontainers.image.revision=9ee7067699cc987f67d3b3b07e6642f7bc27c835
+manifest:org.opencontainers.image.source=https://github.com/hutchybop/FPLGaffer
+manifest:org.opencontainers.image.title=FPLGaffer
+manifest:org.opencontainers.image.url=https://github.com/hutchybop/FPLGaffer
+manifest:org.opencontainers.image.version=main
+2026-03-26T15:02:23.1593154Z   DOCKER_METADATA_OUTPUT_JSON: {"tags":["ghcr.io/hutchybop/fplgaffer:main","ghcr.io/hutchybop/fplgaffer:latest","ghcr.io/hutchybop/fplgaffer:sha-9ee7067"],"tag-names":["main","latest","sha-9ee7067"],"labels":{"org.opencontainers.image.created":"2026-03-26T15:01:43.053Z","org.opencontainers.image.description":"A Fantasy Premier League helper to rate players and suggest transfers (AI help optional)","org.opencontainers.image.licenses":"","org.opencontainers.image.revision":"9ee7067699cc987f67d3b3b07e6642f7bc27c835","org.opencontainers.image.source":"https://github.com/hutchybop/FPLGaffer","org.opencontainers.image.title":"FPLGaffer","org.opencontainers.image.url":"https://github.com/hutchybop/FPLGaffer","org.opencontainers.image.version":"main"},"annotations":["manifest:org.opencontainers.image.created=2026-03-26T15:01:43.053Z","manifest:org.opencontainers.image.description=A Fantasy Premier League helper to rate players and suggest transfers (AI help optional)","manifest:org.opencontainers.image.licenses=","manifest:org.opencontainers.image.revision=9ee7067699cc987f67d3b3b07e6642f7bc27c835","manifest:org.opencontainers.image.source=https://github.com/hutchybop/FPLGaffer","manifest:org.opencontainers.image.title=FPLGaffer","manifest:org.opencontainers.image.url=https://github.com/hutchybop/FPLGaffer","manifest:org.opencontainers.image.version=main"]}
+2026-03-26T15:02:23.1598610Z   DOCKER_METADATA_OUTPUT_BAKE_FILE_TAGS: /home/runner/work/_temp/docker-actions-toolkit-YLr6Vz/docker-metadata-action-bake-tags.json
+2026-03-26T15:02:23.1599521Z   DOCKER_METADATA_OUTPUT_BAKE_FILE_LABELS: /home/runner/work/_temp/docker-actions-toolkit-YLr6Vz/docker-metadata-action-bake-labels.json
+2026-03-26T15:02:23.1600477Z   DOCKER_METADATA_OUTPUT_BAKE_FILE_ANNOTATIONS: /home/runner/work/_temp/docker-actions-toolkit-YLr6Vz/docker-metadata-action-bake-annotations.json
+2026-03-26T15:02:23.1601585Z   DOCKER_METADATA_OUTPUT_BAKE_FILE: /home/runner/work/_temp/docker-actions-toolkit-YLr6Vz/docker-metadata-action-bake.json
+2026-03-26T15:02:23.1602288Z   GH_TOKEN: ***
+2026-03-26T15:02:23.1602468Z ##[endgroup]
+2026-03-26T15:02:23.4957251Z gh: Not Found (HTTP 404)
+2026-03-26T15:02:23.4957684Z {
+2026-03-26T15:02:23.4957966Z   "message": "Not Found",
+2026-03-26T15:02:23.4958440Z   "documentation_url": "https://docs.github.com/rest",
+2026-03-26T15:02:23.4958860Z   "status": "404"
+2026-03-26T15:02:23.4978217Z }
+2026-03-26T15:02:23.4995795Z ##[error]Process completed with exit code 1.
