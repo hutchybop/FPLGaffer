@@ -14,8 +14,16 @@ __pycache__/
 dist/
 build/
 push.sh
+local-push-app.sh
+deploy-push-app.sh
+.env_local_unset.sh
+.env_local.sh
+appDeploy/
 gaffer/
 .opencode/
 venv/
 .venv/
 .envrc
+.github/
+.vscode/
+.idea/

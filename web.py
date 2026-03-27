@@ -388,6 +388,11 @@ def index():
     return render_template("index.html", reports=reports, team_id=team_id)
 
 
+@app.route("/favicon.ico")
+def favicon():
+    return redirect(url_for("static", filename="favicons/favicon.ico"))
+
+
 @app.route("/analyze", methods=["POST"])
 def analyze():
     mode = request.form.get("mode", "transfer")
