@@ -1,4 +1,4 @@
-# FPLGaffer Architecture Reference
+# FPLGaffer Architecture Reference 
 
 ## System Overview
 
