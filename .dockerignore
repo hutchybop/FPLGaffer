@@ -32,3 +32,4 @@ gaffer/
 venv/
 .venv/
 .envrc
+ship/
