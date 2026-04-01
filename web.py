@@ -15,6 +15,11 @@ from utils import file_handlers
 from models import ratings, sort, replacements
 
 
+@app.route("/health")
+def health():
+    return {"status": "ok", "service": "fplgaffer"}, 200
+
+
 def get_reports():
     """Get list of reports sorted by modification time (newest first)"""
     reports = []

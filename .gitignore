@@ -24,7 +24,10 @@ gaffer/
 venv/
 .venv/
 .envrc
-.github/
+!.github/
+!.github/workflows/
+!.github/workflows/*.yml
+!.github/workflows/*.yaml
 .vscode/
 .idea/
 ship/
