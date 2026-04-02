@@ -113,12 +113,12 @@ graph LR
 ```
 
 ### Core Dependencies
-- **External Libraries**: `requests`, `openai`, `pandas`, `numpy`, `scikit-learn`, `tabulate`, `python-dotenv`
-- **Internal Dependencies**: Clear hierarchical structure with minimal circular dependencies
+- **External Libraries**: `requests`, `openai`, `pandas`, `numpy`, `scikit-learn`, `tabulate`, `python-dotenv`, `flask`
+- **Internal Dependencies**: Clear hierarchical structure with no circular dependencies
 
 ### Entry Points
 - **Primary CLI**: `cli.py` - Main CLI entry point
-- **Primary Web**: `web.py` - Flask web entry point
+- **Web UI**: `web.py` - Flask web application (separate but shares core logic)
 - **Configuration**: Environment variables loaded via `.env` file
 
 ## Data Flow

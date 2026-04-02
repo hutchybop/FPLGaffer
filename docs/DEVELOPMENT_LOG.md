@@ -4,6 +4,33 @@ This document tracks the development history of the FPLGaffer project through di
 
 ---
 
+## Session 17 
+### Thursday April 2nd
+<br>
+
+**Summary:** Docker and CI/CD implementation session with production bug fixes including Docker build errors, Node.js deprecation warnings, run analysis errors, and print bugs. Added GitHub Actions workflow and favicon support.
+
+**Git Branch:** main <br>
+**Git commits:** <br>
+5ba60e3, 016c67b, 9b63d47, ecdf9b0, 85c752e, 7366e7a, 442591a, 14a9ed5, bf267d4, 9ee7067, 63b3503, be7b58b 
+
+**Session git history:** 
+- update docker flow - *Updated Docker release workflow for improved CI/CD*
+- update docker config - *Updated Docker configuration files*
+- Test ship - *Tested Docker image building and shipping*
+- Test ship - *Additional Docker shipping tests*
+- Add favicon - *Added favicon support to web application*
+- Fix run anaylsis bug - *Fixed analysis execution errors*
+- Fix Prod print bug - *Resolved production printing issues*
+- Fix prod run error - *Fixed production runtime errors*
+- Fix docker build error - *Resolved Docker build configuration issues*
+- Fix Node.js 24 deprecation warning - *Updated to address Node.js deprecation warnings*
+- fix ai bugs, Add Docker + GitHub Actions setup - *Fixed AI-related bugs and added Docker with GitHub Actions*
+- update dev log - *Updated development log with session information*
+
+---
+<br>
+
 ## Session 16 
 ### Thursday February 19th
 <br>
