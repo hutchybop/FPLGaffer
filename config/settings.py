@@ -219,6 +219,32 @@ def get_current_gameweek(bootstrap_data):
     return 1  # Default to GW1 if no current GW found
 
 
+def get_next_gameweek_event(bootstrap_data):
+    """
+    Get next gameweek event object from bootstrap data.
+    Args:
+        bootstrap_data: json of all the FPL bootstrap data (fetch_bootstrap_data)
+    Returns:
+        dict: next gameweek event data
+    """
+    events = bootstrap_data.get("events", [])
+
+    for event in events:
+        if event.get("is_next"):
+            return event
+
+    current_gw = get_current_gameweek(bootstrap_data)
+    for event in events:
+        if event.get("id") == current_gw + 1:
+            return event
+
+    for event in events:
+        if not event.get("finished"):
+            return event
+
+    return {"id": current_gw}
+
+
 def my_picks(gw):
     """
     Get user's current team picks for a given gameweek.

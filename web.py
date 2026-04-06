@@ -1,6 +1,8 @@
 import os
 import sys
 import json
+import re
+import time
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from dotenv import load_dotenv
 
@@ -8,10 +10,15 @@ load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "fpl-gaffer-secret-key")
+NAV_DEADLINE_CACHE_TTL = 300
+_nav_deadline_cache = {
+    "timestamp": 0,
+    "data": {"nav_next_gw": None, "nav_deadline": None},
+}
 
 from config import constants, settings
 from ai import ai_prompt, ai_advisor
-from utils import file_handlers
+from utils import file_handlers, format_date
 from models import ratings, sort, replacements
 
 
@@ -31,12 +38,32 @@ def get_reports():
                 reports.append(
                     {
                         "filename": f,
-                        "name": f.replace("_", " ").replace(".txt", ""),
+                        "name": format_report_name(f),
                         "modified": os.path.getmtime(path),
                     }
                 )
     reports.sort(key=lambda x: x["modified"], reverse=True)
     return reports
+
+
+def format_report_name(filename):
+    """Format report filename into a readable label for the web app."""
+    transfer_match = re.match(r"^GW_(\d+)_report(?:_(\d+))?\.txt$", filename)
+    if transfer_match:
+        gw = transfer_match.group(1)
+        run = transfer_match.group(2)
+        return (
+            f"Transfer Report - GW {gw} (Run {run})"
+            if run
+            else f"Transfer Report - GW {gw}"
+        )
+
+    wildcard_match = re.match(r"^Wildcard_report(?:_(\d+))?\.txt$", filename)
+    if wildcard_match:
+        run = wildcard_match.group(1)
+        return f"Wildcard Report (Run {run})" if run else "Wildcard Report"
+
+    return filename.replace("_", " ").replace(".txt", "")
 
 
 def run_analysis(mode, team_id=None, num_replacements=4, team_cost=100):
@@ -53,13 +80,20 @@ def run_analysis(mode, team_id=None, num_replacements=4, team_cost=100):
 
     bootstrap_data = settings.fetch_bootstrap_data()
     players = settings.format_all_players(bootstrap_data)
-    gw = settings.get_current_gameweek(bootstrap_data)
-    bank, picks_pids = settings.my_picks(gw)
+    gw_current = settings.get_current_gameweek(bootstrap_data)
+    next_event = settings.get_next_gameweek_event(bootstrap_data)
+    transfer_target_gw = next_event.get("id", gw_current + 1)
+    bank, picks_pids = settings.my_picks(gw_current)
 
     if mode == "transfer":
-        weights, base_name = constants.TRANSFER_WEIGHTS, f"GW_{gw}_report"
+        weights, base_name = (
+            constants.TRANSFER_WEIGHTS,
+            f"GW_{transfer_target_gw}_report",
+        )
+        report_gw = transfer_target_gw
     else:
         weights, base_name = constants.WC_WEIGHTS, "Wildcard_report"
+        report_gw = gw_current
 
     filename = file_handlers.get_unique_filename(base_name)
     f = open(filename, "w")
@@ -71,7 +105,7 @@ def run_analysis(mode, team_id=None, num_replacements=4, team_cost=100):
     sorted_current = sort.sort_current_team(sorted_players, picks_pids)
 
     # Print to report file (same as CLI does)
-    from utils import print_output, format_date
+    from utils import print_output
 
     if mode == "transfer":
         print(f"\n{'=' * 60}")
@@ -165,7 +199,7 @@ def run_analysis(mode, team_id=None, num_replacements=4, team_cost=100):
     return {
         "filename": os.path.basename(filename),
         "mode": mode,
-        "gw": gw,
+        "gw": report_gw,
         "bank": bank,
         "ai_response": (
             ai_response
@@ -173,6 +207,35 @@ def run_analysis(mode, team_id=None, num_replacements=4, team_cost=100):
             else "AI features disabled - No API key found in .env"
         ),
     }
+
+
+@app.context_processor
+def inject_next_deadline():
+    """Inject next gameweek and transfer deadline into all templates."""
+    now = time.time()
+    if now - _nav_deadline_cache["timestamp"] < NAV_DEADLINE_CACHE_TTL:
+        return _nav_deadline_cache["data"]
+
+    try:
+        bootstrap_data = settings.fetch_bootstrap_data()
+        next_event = settings.get_next_gameweek_event(bootstrap_data)
+        next_gw = next_event.get("id")
+        deadline = format_date.format_uk_deadline(next_event.get("deadline_time"))
+        data = {
+            "nav_next_gw": next_gw,
+            "nav_deadline": deadline,
+        }
+        _nav_deadline_cache["timestamp"] = now
+        _nav_deadline_cache["data"] = data
+        return data
+    except Exception:
+        data = {
+            "nav_next_gw": None,
+            "nav_deadline": None,
+        }
+        _nav_deadline_cache["timestamp"] = now
+        _nav_deadline_cache["data"] = data
+        return data
 
 
 def process_transfers(bank, sorted_players, sorted_current):
@@ -423,6 +486,7 @@ def results():
     if not result:
         flash("No analysis results found. Please run an analysis first.", "warning")
         return redirect(url_for("index"))
+    result["display_name"] = format_report_name(result["filename"])
     return render_template("results.html", result=result)
 
 
@@ -438,7 +502,13 @@ def view_report(filename):
         content = f.read()
 
     sections = parse_report_content(content)
-    return render_template("view_report.html", filename=filename, sections=sections)
+    display_name = format_report_name(filename)
+    return render_template(
+        "view_report.html",
+        filename=filename,
+        display_name=display_name,
+        sections=sections,
+    )
 
 
 @app.route("/delete/<filename>")

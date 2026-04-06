@@ -7,9 +7,9 @@
 </div>
 
 <div class="alert alert-info">
-    <strong>Gameweek:</strong> {{ result.gw }} | 
+    <strong>Target Gameweek:</strong> {{ result.gw }} | 
     <strong>Bank:</strong> £{{ result.bank }}m | 
-    <strong>Report:</strong> <a href="{{ url_for('view_report', filename=result.filename) }}" class="alert-link">{{ result.filename }}</a>
+    <strong>Report:</strong> <a href="{{ url_for('view_report', filename=result.filename) }}" class="alert-link">{{ result.display_name }}</a>
 </div>
 
 <!-- AI Recommendations -->

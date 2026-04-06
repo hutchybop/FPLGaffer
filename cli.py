@@ -20,8 +20,10 @@ if __name__ == "__main__":
     # Fetch and process data
     bootstrap_data = settings.fetch_bootstrap_data()
     players = settings.format_all_players(bootstrap_data)
-    gw = settings.get_current_gameweek(bootstrap_data)
-    bank, picks_pids = settings.my_picks(gw)
+    gw_current = settings.get_current_gameweek(bootstrap_data)
+    next_event = settings.get_next_gameweek_event(bootstrap_data)
+    transfer_target_gw = next_event.get("id", gw_current + 1)
+    bank, picks_pids = settings.my_picks(gw_current)
 
     # Ask user to choose wildcard mode or transfer mode
     mode = ""
@@ -32,7 +34,10 @@ if __name__ == "__main__":
 
     # Setting player Attribute weights from user selected mode
     if mode == "t":
-        weights, base_name = constants.TRANSFER_WEIGHTS, f"GW_{gw}_report"
+        weights, base_name = (
+            constants.TRANSFER_WEIGHTS,
+            f"GW_{transfer_target_gw}_report",
+        )
     else:  # mode == "w"
         weights, base_name = constants.WC_WEIGHTS, "Wildcard_report"
 

@@ -32,6 +32,38 @@ body {
     color: var(--highlight-color) !important;
 }
 
+.deadline-pill {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 8px 12px;
+    border: 1px solid rgba(233, 69, 96, 0.35);
+    border-radius: 8px;
+    background: rgba(233, 69, 96, 0.1);
+    line-height: 1.2;
+}
+
+.deadline-pill__gw {
+    color: #ffd4dc;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 700;
+}
+
+.deadline-pill__time {
+    color: #ffffff;
+    font-size: 0.92rem;
+    font-weight: 600;
+}
+
+@media (max-width: 991.98px) {
+    .deadline-pill {
+        width: 100%;
+        margin-top: 0.75rem;
+    }
+}
+
 .card {
     background-color: var(--secondary-color);
     border: 1px solid var(--accent-color);

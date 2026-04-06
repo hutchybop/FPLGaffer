@@ -35,6 +35,12 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
+                {% if nav_next_gw and nav_deadline %}
+                <div class="deadline-pill ms-auto mt-3 mt-lg-0">
+                    <span class="deadline-pill__gw">GW {{ nav_next_gw }} Deadline</span>
+                    <span class="deadline-pill__time">{{ nav_deadline }}</span>
+                </div>
+                {% endif %}
             </div>
         </div>
     </nav>
