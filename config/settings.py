@@ -25,47 +25,27 @@ def validate_team_id():
 
 def ai_client():
     """
-    Initialize and configure AI API clients based on available keys.
+    Initialize and configure AI API client based on available key.
     Args:
         None
     Returns:
-        tuple: (API_KEY, client_free, client_paid) - API availability flag and client
-        instances
+        tuple: (API_KEY, client) - API availability flag and client instance
     """
-    # Create clients
+    # Create client
     API_KEY = True
     print("\n")
     print("=" * 60)
     print("AI API KEY STATUS")
     print("=" * 60)
-    if constants.FREE_API_KEY and constants.PAID_API_KEY:
-        client_free = OpenAI(
-            base_url=constants.BASE_URL, api_key=constants.FREE_API_KEY
-        )
-        client_paid = OpenAI(
-            base_url=constants.BASE_URL, api_key=constants.PAID_API_KEY
-        )
-        print("Both FREE and PAID AI API keys avaliable")
-        print("Will revert to PAID if free limits are met")
-    elif not constants.FREE_API_KEY and constants.PAID_API_KEY:
-        client_paid = OpenAI(
-            base_url=constants.BASE_URL, api_key=constants.PAID_API_KEY
-        )
-        client_free = None
-        print("Only PAID API KEY available, you will be charged per request")
-    elif not constants.PAID_API_KEY and constants.FREE_API_KEY:
-        client_free = OpenAI(
-            base_url=constants.BASE_URL, api_key=constants.FREE_API_KEY
-        )
-        client_paid = None
-        print("Only FREE AI API key available")
+    if constants.ZEN_API_KEY:
+        client = OpenAI(base_url=constants.AI_BASE_URL, api_key=constants.ZEN_API_KEY)
+        print("ZEN API key available")
     else:
-        client_free = None
-        client_paid = None
+        client = None
         API_KEY = False
-        print("No AI API keys available, AI function disabled")
+        print("No AI API key available, AI function disabled")
     print("=" * 60)
-    return API_KEY, client_free, client_paid
+    return API_KEY, client
 
 
 def fetch_fixture_data():

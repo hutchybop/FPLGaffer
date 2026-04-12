@@ -46,107 +46,38 @@ def ai_wildcard_prompt(total_team_cost):
         str: formatted prompt string for AI wildcard squad selection
     """
     wildcard_prompt = f"""
-        You are an expert Fantasy Premier League (FPL) assistant and squad builder.
-        Never include <think> or hidden reasoning steps.
-        ONLY ever return the suggested total cost and squad players.
+        You are an expert Fantasy Premier League (FPL) squad builder.
+        Never include <think> or hidden reasoning.
 
-        You will receive a JSON object with four keys: GKP, DEF, MID, FWD.
-        Each key contains a list of top-rated players for that position,
-        including multiple attributes.
+        You will receive a JSON object with keys GKP, DEF, MID, FWD.
+        Every player object includes a unique `id`.
 
-        Your task:
-            - Build the **optimal 15-player FPL squad** using only the provided players.
-            - The squad **must strictly follow** FPL rules:
-                • 2 Goalkeepers (GKP)
-                • 5 Defenders (DEF)
-                • 5 Midfielders (MID)
-                • 3 Forwards (FWD)
-                • Maximum **3 players from any one team**
-                • **Total cost must not exceed £{total_team_cost}m**
-                • Do not include any duplicate players — every player in the 15-man
-                  squad must be unique and selected only once
-            - Carry out post selection total cost validation
-                - **CRITICAL**: Add up the exact value of each of the 15 players and
-                  confirm the total is equal to or below {total_team_cost}m
-                - Double-check your math - an incorrect total will result in an
-                  invalid squad selection
-            - Before outputting your selection, validate all constraints:
-                - Total cost ≤ £{total_team_cost}m (do NOT exceed)
-                - No more than 3 players from any single team
-                - Exact position counts (2 GKP, 5 DEF, 5 MID, 3 FWD)
-                - **CRITICAL**: Sum ALL 15 player costs accurately - this total will be
-                  verified and must be mathematically correct
-            - If any constraint is violated, replace players to satisfy the rules
-              **before producing output**.
+        Build the best possible valid 15-player squad using only the provided players
+        and return JSON only.
 
-        Selection priorities:
-            1. Follow budget and position rules exactly (strict limit)
-            2. Maximum 3 players per team
-            3. Maximize expected points/performance using the provided player stats
-            4. Choose realistic budget-friendly players if necessary to stay
-               under £{total_team_cost}m
+        Optimization goal:
+        - Maximize squad quality within constraints using player rating as the primary
+          signal, while also considering supporting stats (form, expected points,
+          minutes, and other provided attributes).
 
-        Never include <think> or hidden reasoning steps.
-        ONLY ever return the suggested total cost and optimal 15-player FPL squad
-        players (2 GKP, 5 DEF, 5 MID, 3 FWD).
+        Hard constraints:
+        - Exactly 2 GKP, 5 DEF, 5 MID, 3 FWD
+        - Max 3 players from any one team
+        - Total cost must be <= £{total_team_cost}m
+        - No duplicate players
 
-        Output format (plain text only, no JSON):
-            Total cost: £<total team cost> (Must not exceed £{total_team_cost}m)
+        Output schema (JSON only, no markdown, no extra text):
+        {{
+          "selected_player_ids": [<15 unique ids>]
+        }}
 
-            Squad:
-            GKP(1/2) Player (Team, £cost) - short reasoning
-            GKP(2/2) Player (Team, £cost) - short reasoning
-            DEF(1/5) Player (Team, £cost) - short reasoning
-            DEF(2/5) Player (Team, £cost) - short reasoning
-            DEF(3/5) Player (Team, £cost) - short reasoning
-            DEF(4/5) Player (Team, £cost) - short reasoning
-            DEF(5/5) Player (Team, £cost) - short reasoning
-            MID(1/5) Player (Team, £cost) - short reasoning
-            MID(2/5) Player (Team, £cost) - short reasoning
-            MID(3/5) Player (Team, £cost) - short reasoning
-            MID(4/5) Player (Team, £cost) - short reasoning
-            MID(5/5) Player (Team, £cost) - short reasoning
-            FWD(1/3) Player (Team, £cost) - short reasoning
-            FWD(2/3) Player (Team, £cost) - short reasoning
-            FWD(3/3) Player (Team, £cost) - short reasoning
+        Example:
+        {{
+          "selected_player_ids": [45, 71, 103, 112, 118, 127, 131,
+          149, 166, 177, 188, 194, 205, 216, 230]
+        }}
 
-            Team count:
-            List each team and total players selected (must not exceed 3)
-            Example:
-            LIV - 2
-            ARS - 3
-            MCI - 3
-
-        Example output:
-            Total cost: £99.6m
-
-            Squad:
-            GKP(1/2) Alisson (LIV, £5.8m) - top clean sheet potential
-            GKP(2/2) Turner (NFO, £4.0m) - budget backup
-            DEF(1/5) Trippier (NEW, £6.5m) - assists and clean sheets
-            DEF(2/5) Saliba (ARS, £5.5m) - strong defensive team
-            DEF(3/5) Gvardiol (MCI, £5.0m) - rotation risk but good value
-            DEF(4/5) Gabriel (ARS, £5.0m) - solid pick
-            DEF(5/5) Gusto (CHE, £4.1m) - cheap enabler
-            MID(1/5) Salah (LIV, £12.5m) - premium captain option
-            MID(2/5) Foden (MCI, £7.0m) - strong form
-            MID(3/5) Palmer (CHE, £6.0m) - on penalties
-            MID(4/5) Bowen (WHU, £7.5m) - great fixtures
-            MID(5/5) Gordon (NEW, £6.0m) - consistent minutes
-            FWD(1/3) Haaland (MCI, £14.0m) - must-have forward
-            FWD(2/3) Solanke (BOU, £6.2m) - good fixtures
-            FWD(3/3) Archer (SHU, £4.5m) - budget bench option
-
-            Team count:
-            LIV - 2
-            NFO - 1
-            NEW - 2
-            ARS - 2
-            MCI - 3
-            CHE - 2
-            WHU - 1
-            BOU - 1
-            SHU - 1
-            Total Cost: £99.6m
+        Do not return player names, positions, explanations, or any keys other than
+        selected_player_ids.
     """
     return wildcard_prompt

@@ -16,11 +16,9 @@ TEAM_ID = os.getenv("FPL_TEAM_ID")
 
 
 # --- AI setup ---
-FREE_API_KEY = os.getenv("GROQ_API_KEY_FREE")
-PAID_API_KEY = os.getenv("GROQ_API_KEY_PAID")
-BASE_URL = "https://api.groq.com/openai/v1"
-# AI_MODEL = "qwen/qwen3-32b"
-AI_MODEL = os.getenv("AI_MODEL") or "llama-3.3-70b-versatile"
+ZEN_API_KEY = os.getenv("ZEN_API_KEY")
+AI_BASE_URL = os.getenv("AI_BASE_URL") or "https://opencode.ai/zen/v1"
+AI_MODEL = os.getenv("AI_MODEL") or "gpt-5.4"
 AI_PROMPT = ""
 
 

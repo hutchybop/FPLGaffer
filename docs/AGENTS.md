@@ -71,7 +71,6 @@ Note: No test suite currently exists in `tests/`. Create tests when adding new f
 
 ```
 fplgaffer/
-├── cli.py              # Main CLI entry point
 ├── web.py              # Flask web application
 ├── config/
 │   ├── constants.py    # Global constants, API URLs, weights
@@ -86,7 +85,8 @@ fplgaffer/
 │   └── print_output.py  # Console output formatting
 ├── ai/
 │   ├── ai_prompt.py    # Prompt templates
-│   └── ai_advisor.py   # AI API integration
+│   ├── ai_advisor.py   # AI API integration
+│   └── wildcard_validator.py # Wildcard validation helpers
 ├── modes/
 │   ├── transfer_mode.py  # Transfer mode logic
 │   └── wildcard_mode.py  # Wildcard mode logic
@@ -96,7 +96,7 @@ fplgaffer/
 ```
 
 ### Key Files
-- **Entry Points**: `cli.py` (CLI), `web.py` (Flask app)
+- **Entry Point**: `web.py` (Flask app)
 - **Configuration**: `config/constants.py` (weights, URLs), `config/settings.py` (validation, API setup)
 - **Core Logic**: `models/ratings.py` (rating algorithm), `modes/*.py` (strategy modes)
 
@@ -106,7 +106,7 @@ fplgaffer/
 
 ### Core
 - `requests` - HTTP client for FPL API
-- `openai` - AI API client (Groq)
+- `openai` - AI API client (OpenCode Zen)
 - `python-dotenv` - Environment variable loading
 - `tabulate` - Table formatting
 
@@ -133,13 +133,11 @@ Create a `.env` file based on `.env_example`:
 
 ```
 FPL_TEAM_ID=YOUR_FPL_TEAM_ID
-GROQ_API_KEY_FREE=YOUR_FREE_GROQ_API_KEY    # Optional
-GROQ_API_KEY_PAID=YOUR_PAID_GROQ_API_KEY    # Optional
-AI_MODEL=llama-3.3-70b-versatile            # Optional, default in constants.py
+ZEN_API_KEY=YOUR_ZEN_API_KEY                # Optional
+AI_MODEL=gpt-5.4                            # Optional, default in constants.py
 ```
 
-- If both Groq keys provided, free tier is used first, auto-fallback to paid
-- If no keys provided, AI features are disabled
+- If no Zen key is provided, AI features are disabled
 
 ---
 
@@ -148,7 +146,7 @@ AI_MODEL=llama-3.3-70b-versatile            # Optional, default in constants.py
 - Test files go in `tests/` directory
 - Naming: `test_*.py`
 - Use pytest fixtures for common setup
-- Mock external APIs (FPL API, Groq) in tests
+- Mock external APIs (FPL API, Zen AI) in tests
 - Test both success and error paths
 - Run lint/format before committing
 
@@ -170,7 +168,7 @@ players = ratings.compute_ml_ratings(players, weights, mode_name)
 
 ### AI Integration
 ```python
-client = OpenAI(base_url=constants.BASE_URL, api_key=API_KEY)
+client = OpenAI(base_url=constants.AI_BASE_URL, api_key=constants.ZEN_API_KEY)
 response = client.chat.completions.create(model=model, messages=[...])
 ```
 

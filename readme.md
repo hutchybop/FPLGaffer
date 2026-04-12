@@ -1,6 +1,6 @@
 # 🧠 FPLGaffer
 
-**FPLGaffer** is a Python-based Fantasy Premier League (FPL) assistant that helps with weekly transfers or Wildcard selections. Helps you rate all FPL players, review your current team, and discover the best transfer or Wildcard replacements — all with optional AI-powered suggestions using **Groq**
+**FPLGaffer** is a Python-based Fantasy Premier League (FPL) web assistant for weekly transfers and Wildcard selections. It rates all FPL players, reviews your current team, and suggests transfer or Wildcard options with optional AI-powered recommendations via **OpenCode Zen**.
 
 ---
 
@@ -17,7 +17,7 @@
 - For a user-specified number of team players (up to 15), suggests **4 top replacements** based on normalized ratings and stats.  
 
 ✅ **AI Transfer Recommendations (Optional)**  
-- Uses **Groq’s AI** model to provide intelligent transfer advice based on player data and team balance.
+- Uses configurable **OpenCode Zen** models to provide transfer advice based on player data and team balance.
 
 ✅ **Game Week report text file creatation**  
 - As well as printing to the terminal, a game week report is created in the current directory. (See included Example_GW_report.txt) 
@@ -33,7 +33,7 @@
 - Fetches the top FPL players in each position and prints it in an easy-to-read table view. 
 
 ✅ **AI Wildcard Recommendations (Optional)**  
-- Uses **Groq’s AI** model to provide intelligent Wildcard advice, within FPL total player and price limits.
+- Uses configurable **OpenCode Zen** models for Wildcard advice with backend validation for budget and squad rules.
 
 ✅ **Wildcard report text file creatation**  
 - As well as printing to the terminal, a Wildcard report is created in the current directory. (See included Example_Wildcard_report.txt) 
@@ -72,17 +72,11 @@ cp .env_example .env
 
 ```bash
 FPL_TEAM_ID=YOUR_FPL_TEAM_ID
-GROQ_API_KEY_FREE=YOUR_FREE_GROQ_API_KEY
-GROQ_API_KEY_PAID=YOUR_PAID_GROQ_API_KEY
-AI_MODEL=YOUR_PREFERED_GROQ_AI_MODEL # (Default is set in /config/constants.py)
+ZEN_API_KEY=YOUR_ZEN_API_KEY
+AI_MODEL=gpt-5.4
 ```
 
-Both `GROQ` keys are optional, but if included, the app will use them as follows:
-
-- If **both** keys are present → it will **use the free key by default** and **automatically fall back** to the paid key if the free tier’s limits are exceeded.  
-- If only the **free key** is provided → it will only use the free tier (some large or complex requests may fail).  
-- If only the **paid key** is provided → all requests will be processed using your paid account (billed per token).  
-- If **neither** key is provided → AI features will be disabled.
+`ZEN_API_KEY` is optional. If omitted, AI features are disabled and core analysis still works.
 
 ---
 
@@ -96,29 +90,21 @@ Both `GROQ` keys are optional, but if included, the app will use them as follows
 
 ---
 
-#### 🧠 Get your Groq API keys
-Sign up and generate API keys at:  
-👉 [https://console.groq.com/keys](https://console.groq.com/keys)
+#### 🧠 Get your OpenCode Zen API key
+Sign in and create an API key at:  
+👉 [https://opencode.ai/auth](https://opencode.ai/auth)
 
-You can create two separate Groq accounts:
-- one for **Free Tier** usage, and  
-- one for **Developer (Pay-as-you-go)** usage.  
-
-Use their respective API keys for `GROQ_API_KEY_FREE` and `GROQ_API_KEY_PAID`.
-
-> **Note:** The paid (Developer) tier is billed per token used, but you can cancel anytime. (Always check GROQ's website)
-> The app will always try to use your free tier first before switching to the paid one when needed (e.g., for large prompts or heavy requests).  
+Use your key as `ZEN_API_KEY` in `.env`.
 
 ---
 
-## 🚀 Run the Script
+## 🚀 Run the Web App
 Once your `.env` is configured:
 ```bash
-python3 cli.py
+python3 web.py
 ```
 
-You’ll be prompted to:
-- Choose mode - Transfer (t) or Wildcard (w)
+Then open `http://localhost:3006` and choose Transfer or Wildcard mode in the UI.
 
 ---
 
@@ -218,7 +204,7 @@ strong Liverpool support.
 ## 🧰 Tech Stack
 
 - **Python 3**
-- **Groq API**
+- **OpenCode Zen API**
 - **dotenv** for environment management
 - **PrettyTable / tabulate** for clean console output
 - **requests / FPL API** for player and team data

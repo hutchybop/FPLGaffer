@@ -7,13 +7,13 @@
 - **Transfer Mode**: Analyzes current team performance and suggests optimal player replacements
 - **Wildcard Mode**: Builds optimal 15-player squads from scratch within FPL constraints
 
-The application fetches real-time data from the official FPL API, applies machine learning-based player ratings, and optionally integrates with Groq AI for intelligent recommendations.
+The application fetches real-time data from the official FPL API, applies machine learning-based player ratings, and optionally integrates with OpenCode Zen AI for intelligent recommendations.
 
 ## Architecture Flow
 
 ```mermaid
 graph TD
-    A[cli.py] --> B[Environment Setup]
+    A[web.py] --> B[Environment Setup]
     B --> C[Data Fetching]
     C --> D[Player Rating]
     D --> E[Mode Selection]
@@ -50,16 +50,16 @@ graph TD
 ## File/Module Inventory
 
 ### Entry Point
-- **cli.py**: CLI application orchestrator that coordinates all system components and handles user interaction
-- **web.py**: Flask web application entry point
+- **web.py**: Flask web application entry point and main orchestrator
 
 ### Configuration Layer (`config/`)
 - **constants.py**: Global constants including API endpoints, position mappings, AI configuration, and rating weights for different modes
 - **settings.py**: Core data fetching and API client management, environment validation, and team data processing
 
 ### AI Layer (`ai/`)
-- **ai_advisor.py**: Groq AI client integration with fallback logic between free/paid API tiers
+- **ai_advisor.py**: AI client integration for OpenCode Zen models
 - **ai_prompt.py**: System prompt templates for transfer and wildcard recommendation modes
+- **wildcard_validator.py**: Wildcard response parsing, validation, and repair prompt helpers
 
 ### Data Models (`models/`)
 - **ratings.py**: Machine learning-based player rating computation using QuantileTransformer and weighted scoring
@@ -79,7 +79,7 @@ graph TD
 
 ```mermaid
 graph LR
-    A[cli.py] --> B[config/settings.py]
+    A[web.py] --> B[config/settings.py]
     A --> C[ai/ai_prompt.py]
     A --> D[ai/ai_advisor.py]
     A --> E[utils/file_handlers.py]
@@ -117,8 +117,7 @@ graph LR
 - **Internal Dependencies**: Clear hierarchical structure with no circular dependencies
 
 ### Entry Points
-- **Primary CLI**: `cli.py` - Main CLI entry point
-- **Web UI**: `web.py` - Flask web application (separate but shares core logic)
+- **Web UI**: `web.py` - Flask web application and primary entry point
 - **Configuration**: Environment variables loaded via `.env` file
 
 ## Data Flow
@@ -150,7 +149,7 @@ Rated Players → sort.sort_players() → Top Players by Position → wildcard_m
 
 ### 6. AI Integration Phase
 ```
-AI Prompt → ai_advisor.ai_fpl_helper() → Groq API → Formatted Response
+AI Prompt → ai_advisor.ai_fpl_helper() → OpenCode Zen API → Formatted Response
 ```
 
 ### 7. Output Phase
@@ -163,7 +162,7 @@ All Data → print_output.print_*() → Formatted Tables → file_handlers.Tee()
 ### Transfer Mode Flow
 1. **Team Assessment**: `transfer_mode.py:34-41` displays current team sorted by performance rating
 2. **Replacement Discovery**: `replacements.py:21-31` filters candidates by budget, availability, and team constraints
-3. **AI Integration**: `ai_advisor.py:28-44` handles API calls with automatic fallback between free/paid tiers
+3. **AI Integration**: `ai_advisor.py` handles API calls to OpenCode Zen
 4. **Output Generation**: `print_output.py:59-81` shows financial impact and rating comparisons
 
 ### Wildcard Mode Flow
@@ -185,7 +184,7 @@ All Data → print_output.print_*() → Formatted Tables → file_handlers.Tee()
 
 ### Adding New Operation Modes
 1. **Create Mode Module**: Follow pattern of `modes/transfer_mode.py` and `modes/wildcard_mode.py`
-2. **Update Main Script**: Add mode selection logic in `cli.py:28-38`
+2. **Update Main Script**: Add mode routing logic in `web.py`
 3. **Add AI Prompts**: Create system prompt in `ai/ai_prompt.py` following existing patterns
 
 ### Extending AI Integration

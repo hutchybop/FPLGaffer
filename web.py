@@ -17,7 +17,7 @@ _nav_deadline_cache = {
 }
 
 from config import constants, settings
-from ai import ai_prompt, ai_advisor
+from ai import ai_prompt, ai_advisor, wildcard_validator
 from utils import file_handlers, format_date
 from models import ratings, sort, replacements
 
@@ -76,7 +76,7 @@ def run_analysis(mode, team_id=None, num_replacements=4, team_cost=100):
 
     captured = io.StringIO()
     with redirect_stdout(captured):
-        API_KEY, client_free, client_paid = settings.ai_client()
+        API_KEY, client = settings.ai_client()
 
     bootstrap_data = settings.fetch_bootstrap_data()
     players = settings.format_all_players(bootstrap_data)
@@ -104,7 +104,7 @@ def run_analysis(mode, team_id=None, num_replacements=4, team_cost=100):
     sorted_players = sort.sort_players(players)
     sorted_current = sort.sort_current_team(sorted_players, picks_pids)
 
-    # Print to report file (same as CLI does)
+    # Print analysis output to report file
     from utils import print_output
 
     if mode == "transfer":
@@ -179,14 +179,79 @@ def run_analysis(mode, team_id=None, num_replacements=4, team_cost=100):
             AI_PROMPT = process_transfers(bank, sorted_players, sorted_current)
             transfer_prompt = ai_prompt.ai_transfer_prompt()
             ai_response = ai_advisor.ai_fpl_helper(
-                AI_PROMPT, transfer_prompt, client_free, client_paid, API_KEY
+                AI_PROMPT, transfer_prompt, client, API_KEY
             )
         else:
-            AI_PROMPT, _ = process_wildcard(sorted_players)
+            AI_PROMPT, wildcard_pool = process_wildcard(sorted_players)
             wildcard_prompt = ai_prompt.ai_wildcard_prompt(team_cost)
-            ai_response = ai_advisor.ai_fpl_helper(
-                AI_PROMPT, wildcard_prompt, client_free, client_paid, API_KEY
+            raw_response = ai_advisor.ai_fpl_helper(
+                AI_PROMPT, wildcard_prompt, client, API_KEY
             )
+            if not API_KEY:
+                ai_response = raw_response
+            else:
+                if raw_response.startswith("AI Error:"):
+                    ai_response = raw_response
+                else:
+                    parsed_ids, parse_error = (
+                        wildcard_validator.parse_selected_player_ids(raw_response)
+                    )
+                    validation = wildcard_validator.validate_wildcard_selection(
+                        parsed_ids, wildcard_pool, team_cost
+                    )
+
+                    if parse_error:
+                        validation["valid"] = False
+                        validation["errors"] = [parse_error]
+
+                    is_provider_error = bool(parse_error) and parse_error.startswith(
+                        "Model/API returned error payload"
+                    )
+
+                    if not validation["valid"] and client and not is_provider_error:
+                        repair_prompt = wildcard_validator.build_repair_prompt(
+                            AI_PROMPT,
+                            raw_response,
+                            validation["errors"],
+                        )
+                        repaired_response = ai_advisor.ai_fpl_helper(
+                            repair_prompt,
+                            wildcard_prompt,
+                            client,
+                            API_KEY,
+                        )
+                        repaired_ids, repaired_error = (
+                            wildcard_validator.parse_selected_player_ids(
+                                repaired_response
+                            )
+                        )
+                        if repaired_error:
+                            validation = {
+                                "valid": False,
+                                "errors": [repaired_error],
+                                "squad": [],
+                                "total_cost": 0.0,
+                            }
+                        else:
+                            validation = wildcard_validator.validate_wildcard_selection(
+                                repaired_ids, wildcard_pool, team_cost
+                            )
+
+                    if validation["valid"]:
+                        ai_response = (
+                            wildcard_validator.format_validated_wildcard_response(
+                                validation["squad"],
+                                validation["total_cost"],
+                                team_cost,
+                            )
+                        )
+                    else:
+                        joined_errors = "\n".join(validation["errors"])
+                        ai_response = (
+                            "AI Error: Could not produce a valid wildcard squad.\n"
+                            "Validation failed after retry with the following issues:\n"
+                            f"{joined_errors}"
+                        )
     except Exception as e:
         ai_error = str(e)
         ai_response = f"AI Error: {ai_error}"
@@ -260,7 +325,7 @@ def process_wildcard(sorted_players):
         "MID": sorted_players["MID"][:15],
         "FWD": sorted_players["FWD"][:10],
     }
-    return json.dumps(wildcard_trimmed, ensure_ascii=False, indent=2), 100.0
+    return json.dumps(wildcard_trimmed, ensure_ascii=False, indent=2), wildcard_trimmed
 
 
 def parse_report_content(content):
