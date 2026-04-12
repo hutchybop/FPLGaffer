@@ -78,7 +78,8 @@ fplgaffer/
 ├── models/
 │   ├── ratings.py      # ML-based player ratings
 │   ├── replacements.py # Replacement suggestions logic
-│   └── sort.py         # Player sorting utilities
+│   ├── sort.py         # Player sorting utilities
+│   └── wildcard_optimizer.py # Deterministic wildcard optimizer
 ├── utils/
 │   ├── file_handlers.py # File I/O, output tee
 │   ├── format_date.py   # Date formatting
@@ -114,6 +115,7 @@ fplgaffer/
 - `pandas` - DataFrame operations
 - `numpy` - Numerical computations
 - `scikit-learn` - QuantileTransformer for ratings
+- `pulp` - ILP solver for wildcard optimization
 
 ### Web
 - `flask` - Web framework

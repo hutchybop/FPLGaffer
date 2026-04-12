@@ -81,3 +81,43 @@ def ai_wildcard_prompt(total_team_cost):
         selected_player_ids.
     """
     return wildcard_prompt
+
+
+def ai_wildcard_explain_prompt(total_team_cost):
+    """
+    Generate AI prompt for explaining optimizer-selected wildcard squad.
+    Args:
+        total_team_cost: float representing maximum team budget
+    Returns:
+        str: formatted prompt for wildcard explanation output
+    """
+    wildcard_explain_prompt = f"""
+        You are an expert Fantasy Premier League analyst.
+        You will receive a JSON payload containing:
+        - the optimizer-selected wildcard squad (already valid)
+        - budget usage and diagnostics
+        - top excluded candidates
+
+        Your task:
+        - Briefly explain why this squad is strong within the
+          £{total_team_cost}m budget.
+        - Highlight 3-5 key picks based on rating and supporting stats.
+        - Suggest up to 2 alternative swaps with trade-offs.
+        - Mention notable risks (injury/minutes/fixture uncertainty) if visible in data.
+
+        Rules:
+        - Do not re-calculate or change the selected squad.
+        - Do not include hidden reasoning tags like <think>.
+        - Keep it concise and practical.
+
+        Output format (plain text only):
+        Strengths: <short paragraph>
+        Key picks:
+        - <bullet>
+        - <bullet>
+        Alternatives:
+        - <optional bullet>
+        Risks:
+        - <optional bullet>
+    """
+    return wildcard_explain_prompt

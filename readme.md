@@ -33,7 +33,7 @@
 - Fetches the top FPL players in each position and prints it in an easy-to-read table view. 
 
 ✅ **AI Wildcard Recommendations (Optional)**  
-- Uses configurable **OpenCode Zen** models for Wildcard advice with backend validation for budget and squad rules.
+- Uses a deterministic optimizer to select the best valid squad within constraints, then uses configurable **OpenCode Zen** models to explain picks, alternatives, and risks.
 
 ✅ **Wildcard report text file creatation**  
 - As well as printing to the terminal, a Wildcard report is created in the current directory. (See included Example_Wildcard_report.txt) 
@@ -74,9 +74,15 @@ cp .env_example .env
 FPL_TEAM_ID=YOUR_FPL_TEAM_ID
 ZEN_API_KEY=YOUR_ZEN_API_KEY
 AI_MODEL=gpt-5.4
+WILDCARD_MIN_SPEND_GAP=2.0
+WILDCARD_POOL_GKP=10
+WILDCARD_POOL_DEF=30
+WILDCARD_POOL_MID=30
+WILDCARD_POOL_FWD=20
 ```
 
 `ZEN_API_KEY` is optional. If omitted, AI features are disabled and core analysis still works.
+Wildcard optimization still runs without AI key.
 
 ---
 

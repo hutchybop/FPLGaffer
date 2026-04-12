@@ -17,9 +17,14 @@ TEAM_ID = os.getenv("FPL_TEAM_ID")
 
 # --- AI setup ---
 ZEN_API_KEY = os.getenv("ZEN_API_KEY")
-AI_BASE_URL = os.getenv("AI_BASE_URL") or "https://opencode.ai/zen/v1"
-AI_MODEL = os.getenv("AI_MODEL") or "gpt-5.4"
+AI_BASE_URL = "https://opencode.ai/zen/v1"
+AI_MODEL = "gpt-5.4"
 AI_PROMPT = ""
+WILDCARD_MIN_SPEND_GAP = 2.0
+WILDCARD_POOL_GKP = 10
+WILDCARD_POOL_DEF = 30
+WILDCARD_POOL_MID = 30
+WILDCARD_POOL_FWD = 20
 
 
 # Global weights for all numeric keys in player dict.

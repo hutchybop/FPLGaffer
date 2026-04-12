@@ -19,7 +19,7 @@ _nav_deadline_cache = {
 from config import constants, settings
 from ai import ai_prompt, ai_advisor, wildcard_validator
 from utils import file_handlers, format_date
-from models import ratings, sort, replacements
+from models import ratings, sort, replacements, wildcard_optimizer
 
 
 @app.route("/health")
@@ -147,10 +147,10 @@ def run_analysis(mode, team_id=None, num_replacements=4, team_cost=100):
         print(f"Total Team Value: £{team_cost}m\n")
 
         wildcard_trimmed = {
-            "GKP": sorted_players["GKP"][:5],
-            "DEF": sorted_players["DEF"][:15],
-            "MID": sorted_players["MID"][:15],
-            "FWD": sorted_players["FWD"][:10],
+            "GKP": sorted_players["GKP"][: constants.WILDCARD_POOL_GKP],
+            "DEF": sorted_players["DEF"][: constants.WILDCARD_POOL_DEF],
+            "MID": sorted_players["MID"][: constants.WILDCARD_POOL_MID],
+            "FWD": sorted_players["FWD"][: constants.WILDCARD_POOL_FWD],
         }
 
         positions = [
@@ -183,74 +183,72 @@ def run_analysis(mode, team_id=None, num_replacements=4, team_cost=100):
             )
         else:
             AI_PROMPT, wildcard_pool = process_wildcard(sorted_players)
-            wildcard_prompt = ai_prompt.ai_wildcard_prompt(team_cost)
-            raw_response = ai_advisor.ai_fpl_helper(
-                AI_PROMPT, wildcard_prompt, client, API_KEY
+            optimization = wildcard_optimizer.optimize_wildcard_squad(
+                wildcard_pool,
+                team_cost,
+                constants.WILDCARD_MIN_SPEND_GAP,
             )
-            if not API_KEY:
-                ai_response = raw_response
+
+            if not optimization.get("valid"):
+                joined_errors = "\n".join(optimization.get("errors", []))
+                ai_response = (
+                    "AI Error: Could not build a valid wildcard squad with optimizer.\n"
+                    f"{joined_errors}"
+                )
             else:
-                if raw_response.startswith("AI Error:"):
-                    ai_response = raw_response
-                else:
-                    parsed_ids, parse_error = (
-                        wildcard_validator.parse_selected_player_ids(raw_response)
-                    )
-                    validation = wildcard_validator.validate_wildcard_selection(
-                        parsed_ids, wildcard_pool, team_cost
-                    )
+                base_output = wildcard_validator.format_validated_wildcard_response(
+                    optimization["squad"],
+                    optimization["total_cost"],
+                    team_cost,
+                )
+                diagnostics = wildcard_optimizer.format_optimizer_diagnostics(
+                    optimization,
+                    team_cost,
+                )
+                ai_response = f"{base_output}\n\nDiagnostics:\n{diagnostics}"
 
-                    if parse_error:
-                        validation["valid"] = False
-                        validation["errors"] = [parse_error]
-
-                    is_provider_error = bool(parse_error) and parse_error.startswith(
-                        "Model/API returned error payload"
-                    )
-
-                    if not validation["valid"] and client and not is_provider_error:
-                        repair_prompt = wildcard_validator.build_repair_prompt(
-                            AI_PROMPT,
-                            raw_response,
-                            validation["errors"],
-                        )
-                        repaired_response = ai_advisor.ai_fpl_helper(
-                            repair_prompt,
-                            wildcard_prompt,
-                            client,
-                            API_KEY,
-                        )
-                        repaired_ids, repaired_error = (
-                            wildcard_validator.parse_selected_player_ids(
-                                repaired_response
-                            )
-                        )
-                        if repaired_error:
-                            validation = {
-                                "valid": False,
-                                "errors": [repaired_error],
-                                "squad": [],
-                                "total_cost": 0.0,
+                if API_KEY and client:
+                    explain_prompt = ai_prompt.ai_wildcard_explain_prompt(team_cost)
+                    explain_payload = {
+                        "budget_limit": team_cost,
+                        "selected_squad": [
+                            {
+                                "id": p.get("id"),
+                                "name": p.get("web_name"),
+                                "team": p.get("team_name"),
+                                "pos": p.get("pos"),
+                                "cost": p.get("now_cost(m)"),
+                                "rating": p.get("rating"),
+                                "form": p.get("form"),
+                                "ep_next": p.get("ep_next"),
+                                "minutes": p.get("minutes"),
                             }
-                        else:
-                            validation = wildcard_validator.validate_wildcard_selection(
-                                repaired_ids, wildcard_pool, team_cost
-                            )
-
-                    if validation["valid"]:
-                        ai_response = (
-                            wildcard_validator.format_validated_wildcard_response(
-                                validation["squad"],
-                                validation["total_cost"],
-                                team_cost,
-                            )
-                        )
+                            for p in optimization["squad"]
+                        ],
+                        "diagnostics": {
+                            "total_cost": optimization.get("total_cost"),
+                            "budget_left": optimization.get("budget_left"),
+                            "objective_score": optimization.get("objective_score"),
+                        },
+                        "top_excluded": optimization.get("top_excluded", []),
+                    }
+                    explain_input = json.dumps(
+                        explain_payload,
+                        ensure_ascii=False,
+                        indent=2,
+                    )
+                    explanation = ai_advisor.ai_fpl_helper(
+                        explain_input,
+                        explain_prompt,
+                        client,
+                        API_KEY,
+                    )
+                    if explanation and not explanation.startswith("AI Error:"):
+                        ai_response = f"{ai_response}\n\nAI Notes:\n{explanation}"
                     else:
-                        joined_errors = "\n".join(validation["errors"])
                         ai_response = (
-                            "AI Error: Could not produce a valid wildcard squad.\n"
-                            "Validation failed after retry with the following issues:\n"
-                            f"{joined_errors}"
+                            f"{ai_response}\n\nAI Notes:\n"
+                            "AI explanation unavailable for this run."
                         )
     except Exception as e:
         ai_error = str(e)
@@ -266,11 +264,7 @@ def run_analysis(mode, team_id=None, num_replacements=4, team_cost=100):
         "mode": mode,
         "gw": report_gw,
         "bank": bank,
-        "ai_response": (
-            ai_response
-            if API_KEY
-            else "AI features disabled - No API key found in .env"
-        ),
+        "ai_response": ai_response,
     }
 
 
@@ -318,12 +312,12 @@ def process_transfers(bank, sorted_players, sorted_current):
 
 
 def process_wildcard(sorted_players):
-    """Process wildcard mode and return AI prompt"""
+    """Build wildcard candidate pool and serialized payload."""
     wildcard_trimmed = {
-        "GKP": sorted_players["GKP"][:5],
-        "DEF": sorted_players["DEF"][:15],
-        "MID": sorted_players["MID"][:15],
-        "FWD": sorted_players["FWD"][:10],
+        "GKP": sorted_players["GKP"][: constants.WILDCARD_POOL_GKP],
+        "DEF": sorted_players["DEF"][: constants.WILDCARD_POOL_DEF],
+        "MID": sorted_players["MID"][: constants.WILDCARD_POOL_MID],
+        "FWD": sorted_players["FWD"][: constants.WILDCARD_POOL_FWD],
     }
     return json.dumps(wildcard_trimmed, ensure_ascii=False, indent=2), wildcard_trimmed
 

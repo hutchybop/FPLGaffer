@@ -5,7 +5,7 @@
 **FPLGaffer** is a Python-based Fantasy Premier League assistant that provides data-driven player analysis and AI-powered recommendations for team management. The system operates in two distinct modes:
 
 - **Transfer Mode**: Analyzes current team performance and suggests optimal player replacements
-- **Wildcard Mode**: Builds optimal 15-player squads from scratch within FPL constraints
+- **Wildcard Mode**: Builds optimal 15-player squads via deterministic optimization within FPL constraints
 
 The application fetches real-time data from the official FPL API, applies machine learning-based player ratings, and optionally integrates with OpenCode Zen AI for intelligent recommendations.
 
@@ -59,7 +59,8 @@ graph TD
 ### AI Layer (`ai/`)
 - **ai_advisor.py**: AI client integration for OpenCode Zen models
 - **ai_prompt.py**: System prompt templates for transfer and wildcard recommendation modes
-- **wildcard_validator.py**: Wildcard response parsing, validation, and repair prompt helpers
+- **wildcard_validator.py**: Wildcard output formatting and validation helpers
+- **wildcard_optimizer.py**: Deterministic ILP optimizer for wildcard squad selection
 
 ### Data Models (`models/`)
 - **ratings.py**: Machine learning-based player rating computation using QuantileTransformer and weighted scoring
@@ -144,12 +145,12 @@ Rated Players → sort.sort_players() → Position Groups → transfer_mode.tran
 
 ### 5. Processing Phase (Wildcard Mode)
 ```
-Rated Players → sort.sort_players() → Top Players by Position → wildcard_mode.wildcard() → AI Prompt
+Rated Players → sort.sort_players() → Candidate Pool → wildcard_optimizer.optimize_wildcard_squad() → Valid Squad
 ```
 
 ### 6. AI Integration Phase
 ```
-AI Prompt → ai_advisor.ai_fpl_helper() → OpenCode Zen API → Formatted Response
+Optimizer Result → ai_advisor.ai_fpl_helper() → OpenCode Zen API → Explanatory Notes
 ```
 
 ### 7. Output Phase
@@ -166,9 +167,9 @@ All Data → print_output.print_*() → Formatted Tables → file_handlers.Tee()
 4. **Output Generation**: `print_output.py:59-81` shows financial impact and rating comparisons
 
 ### Wildcard Mode Flow
-1. **Player Selection**: `wildcard_mode.py:32-37` extracts top performers by position
-2. **Constraint Validation**: AI prompt enforces FPL rules (position counts, budget, team limits)
-3. **Squad Optimization**: AI selects optimal 15-player squad within constraints
+1. **Candidate Selection**: `web.py` extracts top candidates by position
+2. **Deterministic Optimization**: `wildcard_optimizer.py` solves exact squad constraints and objective
+3. **AI Commentary**: `ai_advisor.py` provides explanation and alternatives for the selected squad
 
 ### Rating System Interaction
 1. **ML Scaling**: `ratings.py:36-47` applies QuantileTransformer for normalized scoring
@@ -206,7 +207,7 @@ All Data → print_output.print_*() → Formatted Tables → file_handlers.Tee()
 
 - **Modular Design**: Clear separation of concerns with dedicated layers for configuration, AI, models, modes, and utilities
 - **Flexible Rating System**: ML-based normalization with configurable weights for different use cases
-- **Robust AI Integration**: Automatic fallback between API tiers with comprehensive error handling
+- **Robust Wildcard Selection**: Deterministic optimization guarantees valid squads under constraints
 - **Extensible Output**: Dual console/file output with formatted tables and unique file naming
 - **Data Integrity**: Comprehensive validation and safe conversion functions for API data
 

@@ -271,10 +271,14 @@ def format_validated_wildcard_response(squad, total_cost, budget_limit):
 
     for pos, expected in [("GKP", 2), ("DEF", 5), ("MID", 5), ("FWD", 3)]:
         for idx, player in enumerate(by_pos[pos], start=1):
+            try:
+                rating_text = f"{float(player.get('rating', 0.0)):.2f}"
+            except Exception:
+                rating_text = "0.00"
             lines.append(
                 f"{pos}({idx}/{expected}) {player.get('web_name', '')} "
                 f"({player.get('team_name', '')}, £{player.get('now_cost(m)', 0)}m, "
-                f"{player.get('rating', 0)})"
+                f"{rating_text})"
             )
 
     return "\n".join(lines)
